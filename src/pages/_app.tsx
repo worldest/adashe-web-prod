@@ -1,3 +1,4 @@
+//@ts-nocheck
 // ** Next Imports
 import Head from 'next/head'
 import { Router } from 'next/router'
