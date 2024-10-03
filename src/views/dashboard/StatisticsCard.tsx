@@ -1,9 +1,10 @@
+//@ts-nocheck
 import { ReactElement, useEffect, useState } from 'react';
 
 // MUI Imports
 import { Box, Grid, Card, IconButton, Typography, CardContent, Paper, CardHeader } from '@mui/material';
 import { DotsVertical, TrendingUp, CellphoneLink, AccountOutline, AccountGroup, PlusCircle } from 'mdi-material-ui';
-import Image from 'next/image'; 
+import Image from 'next/image';
 import GroupDetailsModal from 'src/@core/components/Modal';
 import { HTTPGetWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
@@ -34,10 +35,10 @@ const StatisticsCard = () => {
   const [users, setUsers] = useState(1000); // Example user data
   const [matchs, setMatchs] = useState(500); // Example automatic prediction data
   const [match, setMatch] = useState(300); // Example manual prediction data
-  
+
   // State to handle modal visibility and the selected group
   const [selectedGroup, setSelectedGroup] = useState<any>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const [txn, setTxn] = useState([]);
   const [totalCont, setTotalCont] = useState("0.00");
@@ -46,30 +47,30 @@ const StatisticsCard = () => {
   const [group, setGroup] = useState([]);
   const router = useRouter()
   const getTrans = async () => {
-    const user = localStorage.getItem("user"); 
+    const user = localStorage.getItem("user");
     if (user === null) {
       router.push('/pages/login');
       return;
     }
- 
+
     const parsedUser = JSON.parse(user); // Now it's parsed properly
-     
-    const userId = parsedUser.user.user_id; 
+
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
 
     console.log("User ID:", userId);
     console.log("Token:", token);
 
-    try { 
+    try {
       const data = await HTTPGetWithToken(`${BASEURL}/user/transactions/${userId}`, token);
       console.log("Transaction Data:", data);
- 
+
       if (data.code === 200) {
         setTxn(data.payload);
-        
+
         let tot = 0;
         let pend = 0;
- 
+
         data.payload.forEach(o => {
           if (o.status === 0) pend += parseFloat(o.amount);
           if (o.status === 1) tot += parseFloat(o.amount);
@@ -85,24 +86,24 @@ const StatisticsCard = () => {
     } catch (error) {
       console.error('Error making HTTP request:', error);
     }
-};
+  };
 
   const getGroup = async () => {
-    const user = localStorage.getItem("user"); 
+    const user = localStorage.getItem("user");
     if (user === null) {
       router.push('/pages/login');
       return;
     }
- 
+
     const parsedUser = JSON.parse(user); // Now it's parsed properly
-     
-    const userId = parsedUser.user.user_id; 
+
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
 
     console.log("User ID:", userId);
     console.log("Token:", token);
     try {
-      const data = await HTTPGetWithToken(`${BASEURL}/group/member/${userId}`,token);
+      const data = await HTTPGetWithToken(`${BASEURL}/group/member/${userId}`, token);
       console.log("Grop", data)
       if (data.code === 200) {
         const payload = data.payload.map(item => {
@@ -118,22 +119,22 @@ const StatisticsCard = () => {
     }
   };
 
-  const getAccount = async () => {   
-    const user = localStorage.getItem("user"); 
-  if (user === null) {
-    router.push('/pages/login');
-    return;
-  }
+  const getAccount = async () => {
+    const user = localStorage.getItem("user");
+    if (user === null) {
+      router.push('/pages/login');
+      return;
+    }
 
-  const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-  const userId = parsedUser.user.user_id; 
-  const token = parsedUser.user.token;
+    const parsedUser = JSON.parse(user); // Now it's parsed properly
 
-  console.log("User ID:", userId);
-  console.log("Token:", token);
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token;
+
+    console.log("User ID:", userId);
+    console.log("Token:", token);
     try {
-      const data = await HTTPGetWithToken(`${BASEURL}/user/${userId}`,token);  
+      const data = await HTTPGetWithToken(`${BASEURL}/user/${userId}`, token);
       console.log("Acc", data)
       if (data.code === 200) {
         setData(data.payload);
@@ -146,21 +147,21 @@ const StatisticsCard = () => {
   };
 
   const [totalPayout, setTotalPayout] = useState(0)
-  const fetchGroupPayouts = async () => { 
-      const user = localStorage.getItem("user"); 
-  if (user === null) {
-    router.push('/pages/login');
-    return;
-  } 
+  const fetchGroupPayouts = async () => {
+    const user = localStorage.getItem("user");
+    if (user === null) {
+      router.push('/pages/login');
+      return;
+    }
 
     if (user) {
       const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-  const userId = parsedUser.user.user_id; 
-  const token = parsedUser.user.token;
+
+      const userId = parsedUser.user.user_id;
+      const token = parsedUser.user.token;
 
 
-      HTTPGetWithToken(`${BASEURL}/group/payouts/user/${userId}`,token)
+      HTTPGetWithToken(`${BASEURL}/group/payouts/user/${userId}`, token)
         .then(data => {
           console.log("TXN", data)
           if (data.code === 200) {
@@ -203,14 +204,14 @@ const StatisticsCard = () => {
       title: 'Create Group',
       color: 'success',
       icon: <PlusCircle sx={{ fontSize: '1.75rem', color: '#000' }} />,
-      path: '/AutoPredictTable'
+      path: '/CreateAccount'
     },
     {
       stats: `${matchs}`,
       title: 'Groups',
       color: 'primary',
       icon: <AccountGroup sx={{ fontSize: '1.75rem', color: '#000' }} />,
-      path: '/form-layouts'
+      path: '/Group'
     }
   ];
 
@@ -220,7 +221,7 @@ const StatisticsCard = () => {
       <Grid item xs={12} sm={6} key={index}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
-          onClick={() => router.push(item.path)} 
+            onClick={() => router.push(item.path)}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -245,7 +246,7 @@ const StatisticsCard = () => {
   // Render Contribution & Payout Boxes
   const renderBoxes = () => {
     const statsData = [
-      { id: 1, title: 'Total Contribution', amount:`₦ ${totalCont}` }, 
+      { id: 1, title: 'Total Contribution', amount: `₦ ${totalCont}` },
       { id: 2, title: 'Total Payout', amount: `₦ ${totalPayout !== null ? totalPayout : 0}` }
     ];
 
@@ -261,7 +262,7 @@ const StatisticsCard = () => {
             borderRadius: '12px',
             boxShadow: 0
           }}
-           
+
         >
           {/* Left-aligned Header */}
           <Typography variant="h6" sx={{ color: '#000' }} fontWeight="bold">
@@ -270,7 +271,7 @@ const StatisticsCard = () => {
 
           {/* Right-aligned Amount */}
           <Typography variant="h5" sx={{ color: '#4fb26e' }} fontWeight="bold">
-          {stat.amount}
+            {stat.amount}
           </Typography>
         </Paper>
       </Grid>
@@ -364,7 +365,7 @@ const StatisticsCard = () => {
                 Welcome,
               </Typography>
               <Typography variant='h6' sx={{ color: '#000', ml: 1 }} fontWeight='bold'>
-              {data.first_name}
+                {data.first_name}
               </Typography>
             </Box>
           }
@@ -396,14 +397,14 @@ const StatisticsCard = () => {
         </CardContent>
       </Card>
 
-      {/* Group Details Modal */} 
-        <GroupDetailsModal
-          isVisible={isModalVisible}
-          onClose={handleCloseModal}
-          groupId={selectedGroup}
-          // groupName={selectedGroup.name}
-          // groupDescription={selectedGroup.description}
-        /> 
+      {/* Group Details Modal */}
+      <GroupDetailsModal
+        isVisible={isModalVisible}
+        onClose={handleCloseModal}
+        groupId={selectedGroup}
+      // groupName={selectedGroup.name}
+      // groupDescription={selectedGroup.description}
+      />
     </>
   );
 };

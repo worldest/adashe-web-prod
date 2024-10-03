@@ -1,3 +1,4 @@
+//@ts-nocheck
 // ** React Import
 import { ReactNode } from 'react'
 
@@ -121,14 +122,14 @@ const VerticalNavHeader = (props: Props) => {
                 </g>
               </g>
             </svg> */}
-            <HeaderTitle variant='h6' sx={{ ml: 3,mt:10 }}>
-            <Image
-               src="/images/Logo2.jpg"  // Assuming your image is located at public/image/logo.png
-              alt="Logo"
-              width={120} 
-              height={70} 
-              style={{ objectFit: 'contain' }}
-             />
+            <HeaderTitle variant='h6' sx={{ ml: 3, mt: 10 }}>
+              <Image
+                src="/images/Logo2.jpg"  // Assuming your image is located at public/image/logo.png
+                alt="Logo"
+                width={120}
+                height={70}
+                style={{ objectFit: 'contain' }}
+              />
             </HeaderTitle>
           </StyledLink>
         </Link>

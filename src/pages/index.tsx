@@ -24,25 +24,25 @@ import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Box } from 'mdi-material-ui'
-import { Button, Paper, Typography } from '@mui/material' 
+import { Button, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 
 const Dashboard = () => {
   const router = useRouter()
-  useEffect(()=>{
+  useEffect(() => {
     const getUser = localStorage.getItem("user")
-    if(getUser === null){
+    if (getUser === null) {
       router.push('./pages/login')
     }
     console.log(getUser)
-    },[])
+  }, [])
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
         {/* <Grid item xs={12} md={4}>
           <Trophy />
         </Grid> */}
-        <Grid item xs={12} > 
+        <Grid item xs={12} >
           <StatisticsCard />
         </Grid>
         {/* <Grid item xs={12} md={6} lg={4}>

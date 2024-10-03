@@ -1,3 +1,4 @@
+//@ts-nocheck
 // ** React Imports
 import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
 

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -9,12 +10,12 @@ import {
   CircularProgress,
   Snackbar,
   Grid,
-} from '@mui/material';  
+} from '@mui/material';
 import { HTTPGetWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
 import { useRouter } from 'next/router';
 
-const PaymentHistoryPage: React.FC = () => { 
+const PaymentHistoryPage: React.FC = () => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -38,9 +39,9 @@ const PaymentHistoryPage: React.FC = () => {
     }
 
     const parsedUser = JSON.parse(user);
-    const userId = parsedUser.user.user_id; 
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
-    HTTPGetWithToken(`${BASEURL}/user/transactions/${userId}`,token)
+    HTTPGetWithToken(`${BASEURL}/user/transactions/${userId}`, token)
       .then(data => {
         if (data.code === 200) {
           setPayments(data.payload);
@@ -67,15 +68,15 @@ const PaymentHistoryPage: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, padding: 5, backgroundColor:"#fff" }}>
-     <Grid item xs={12}>
-    <Typography variant='h5'sx={{color:"#000",fontWeight:"bold"}}>
-    Contribution History
-    </Typography>
-    </Grid>
+    <Box sx={{ flexGrow: 1, padding: 5, backgroundColor: "#fff" }}>
+      <Grid item xs={12}>
+        <Typography variant='h5' sx={{ color: "#000", fontWeight: "bold" }}>
+          Contribution History
+        </Typography>
+      </Grid>
       <Box sx={{
         padding: 2,
-        backgroundColor: '#fff', 
+        backgroundColor: '#fff',
         boxShadow: 0,
         marginTop: 2,
       }}>
@@ -84,24 +85,24 @@ const PaymentHistoryPage: React.FC = () => {
           <img src="../../assets/logo.png" alt="Logo" style={{ width: 100, height: 100, borderRadius: 20 }} />
         </Box> */}
         {loading ? (
-          <CircularProgress sx={{color:'#4fb26e'}} />
+          <CircularProgress sx={{ color: '#4fb26e' }} />
         ) : (
           payments.map(payment => (
             <Paper key={payment.id} sx={{
               display: 'flex',
               alignItems: 'center',
               padding: 2,
-              border:"2px solid",
-              borderColor:"#4fb26e",
+              border: "2px solid",
+              borderColor: "#4fb26e",
               marginBottom: 2,
               backgroundColor: '#e8f9ed',
               borderRadius: 2,
               boxShadow: 0,
             }}>
-              <Box sx={{ marginRight: 2 }}> 
+              <Box sx={{ marginRight: 2 }}>
               </Box>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" sx={{color:"#000"}}>{payment.group_name}</Typography>
+                <Typography variant="h6" sx={{ color: "#000" }}>{payment.group_name}</Typography>
                 <Typography variant="body2" color="textSecondary">
                   {payment.created_at.substring(0, 19)}
                 </Typography>
@@ -109,7 +110,7 @@ const PaymentHistoryPage: React.FC = () => {
                   {payment.status === 0 ? "Pending" : payment.status === 1 ? "Completed" : "Queried"}
                 </Typography>
               </Box>
-              <Typography variant="h6" sx={{color:"#000", fontWeight:"bold"}}>₦{payment.amount}</Typography>
+              <Typography variant="h6" sx={{ color: "#000", fontWeight: "bold" }}>₦{payment.amount}</Typography>
             </Paper>
           ))
         )}

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Modal, CircularProgress, IconButton, Grid } from '@mui/material';
 import { useRouter } from 'next/router'; 

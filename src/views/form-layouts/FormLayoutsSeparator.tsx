@@ -1,4 +1,5 @@
- // ** React Imports
+//@ts-nocheck
+// ** React Imports
 import { ChangeEvent, forwardRef, MouseEvent, useState } from 'react'
 
 // ** MUI Imports
@@ -53,7 +54,7 @@ const FormLayoutsSeparator = () => {
   const [prediction, setPrediction] = useState("")
   const [category, setCategory] = useState("")
   const [homeTeam, setHomeTeam] = useState("")
-  const [language, setLanguage] = useState<string[]>([]) 
+  const [language, setLanguage] = useState<string[]>([])
   const [startDate, setStartDate] = useState(new Date());
   const [values, setValues] = useState<State>({
     password: '',
@@ -61,37 +62,37 @@ const FormLayoutsSeparator = () => {
     showPassword: false,
     showPassword2: false
   })
- const postPrediction = () => {
-  if(prediction === "" || sport === "" || awayTeam === "" || category === "" || homeTeam === "" || startDate  === null|| time === "" || league == ""){
-    alert("Fill the requirements")
-  }else{
-    
-  var body ={
-    ref: "PremiumMatches",
-    data: {
-      Prediction: prediction,
-      away: awayTeam,
-      category: category,
-      home: homeTeam,
-      match_date: startDate,
-      match_time: time,
-      sport: sport,
-      league: league
+  const postPrediction = () => {
+    if (prediction === "" || sport === "" || awayTeam === "" || category === "" || homeTeam === "" || startDate === null || time === "" || league == "") {
+      alert("Fill the requirements")
+    } else {
+
+      var body = {
+        ref: "PremiumMatches",
+        data: {
+          Prediction: prediction,
+          away: awayTeam,
+          category: category,
+          home: homeTeam,
+          match_date: startDate,
+          match_time: time,
+          sport: sport,
+          league: league
+        }
+      }
+      console.log(body)
+      HTTPPostNoToken(`${BASEURL}/set/pushToNode`, body)
+        .then(data => {
+          console.log(data)
+          if (data.code === 200) {
+            alert("Prediction uploaded sucessfully")
+            router.push('/')
+          } else {
+            alert("Try again")
+          }
+        })
     }
-  } 
-  console.log(body)
-  HTTPPostNoToken(`${BASEURL}/set/pushToNode`,body)
-  .then(data => {
-    console.log(data)
-    if(data.code === 200){
-      alert("Prediction uploaded sucessfully")   
-      router.push('/')
-    }else{
-      alert("Try again")
-    }
-  })
-}
- }
+  }
   // Handle Password
   const handlePasswordChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
@@ -194,8 +195,8 @@ const FormLayoutsSeparator = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='League' placeholder='Premier League' onChange={(e) => {setLeague(e.target.value)}}/>
-            </Grid> 
+              <TextField fullWidth label='League' placeholder='Premier League' onChange={(e) => { setLeague(e.target.value) }} />
+            </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel id='form-layouts-separator-select-label'>Sport</InputLabel>
@@ -204,22 +205,22 @@ const FormLayoutsSeparator = () => {
                   // defaultValue={setSport}
                   id='form-layouts-separator-select'
                   labelId='form-layouts-separator-select-label'
-                  onChange={(e)=>{setSport(e.target.value)}}
+                  onChange={(e) => { setSport(e.target.value) }}
                 >
                   <MenuItem value="Football">Football</MenuItem>
                   <MenuItem value="Basketball">Basketball</MenuItem>
-                  <MenuItem value="Tennis">Tennis</MenuItem>  
+                  <MenuItem value="Tennis">Tennis</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Home team' placeholder='Futnance FC' onChange={(e) => {setHomeTeam(e.target.value)}} />
+              <TextField fullWidth label='Home team' placeholder='Futnance FC' onChange={(e) => { setHomeTeam(e.target.value) }} />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Away team' placeholder='Futnance Fc' onChange={(e) => {setAwayTeam(e.target.value)}}/>
+              <TextField fullWidth label='Away team' placeholder='Futnance Fc' onChange={(e) => { setAwayTeam(e.target.value) }} />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Prediction' placeholder='1 or GG' onChange={(e) => {setPrediction(e.target.value)}}/>
+              <TextField fullWidth label='Prediction' placeholder='1 or GG' onChange={(e) => { setPrediction(e.target.value) }} />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -229,11 +230,11 @@ const FormLayoutsSeparator = () => {
                   // defaultValue={setCategory}
                   id='form-layouts-separator-select'
                   labelId='form-layouts-separator-select-label'
-                  onChange={(e)=>{setCategory(e.target.value)}}
+                  onChange={(e) => { setCategory(e.target.value) }}
                 >
                   <MenuItem value="Free">Free  tips</MenuItem>
                   <MenuItem value="Combo, 2 and 5 odds and 20 weekend odds">Combo, 2 and 5 odds and 20 weekend odds</MenuItem>
-                  <MenuItem value="Big odds">Big odds</MenuItem>  
+                  <MenuItem value="Big odds">Big odds</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -270,10 +271,10 @@ const FormLayoutsSeparator = () => {
               />
             </Grid>  */}
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Match date' type="date" placeholder='07-10-2023' onChange={(e) => {setStartDate(e.target.value)}} />
+              <TextField fullWidth label='Match date' type="date" placeholder='07-10-2023' onChange={(e) => { setStartDate(e.target.value) }} />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Match time' placeholder='00:00' onChange={(e) => {setTime(e.target.value)}} />
+              <TextField fullWidth label='Match time' placeholder='00:00' onChange={(e) => { setTime(e.target.value) }} />
             </Grid>
           </Grid>
         </CardContent>
@@ -281,7 +282,7 @@ const FormLayoutsSeparator = () => {
         <CardActions>
           <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained' onClick={postPrediction}>
             Upload Prediction
-          </Button> 
+          </Button>
         </CardActions>
       </form>
     </Card>

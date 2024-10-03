@@ -1,4 +1,5 @@
- // ** React Imports
+//@ts-nocheck
+// ** React Imports
  import { ChangeEvent, forwardRef, MouseEvent, useEffect, useState } from 'react'
 
  // ** MUI Imports

@@ -1,3 +1,5 @@
+
+//@ts-nocheck
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import {
   Modal,
@@ -10,14 +12,14 @@ import {
   Card,
   CardContent,
   Button,
-  CardMedia, 
-  Avatar, 
+  CardMedia,
+  Avatar,
   TextField,
   CircularProgress,
   Paper,
   ImageList,
   ImageListItem
-} from '@mui/material'; 
+} from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -48,30 +50,30 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { HTTPGetWithToken, HTTPPatchWithToken, HTTPPostWithToken, } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
-import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd'; 
+import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
 import ScrollBar from 'react-perfect-scrollbar';
-import ImageIcon from '@mui/icons-material/Image'; 
-import { useDropzone } from "react-dropzone"; 
+import ImageIcon from '@mui/icons-material/Image';
+import { useDropzone } from "react-dropzone";
 import Message from '../Message';
 import MessageModal from '../Message';
 interface GroupDetailsModalProps {
   isVisible: boolean;
   onClose: () => void;
   groupId: string;
-//   groupName: string;
-//   groupDescription: string;
-} 
+  //   groupName: string;
+  //   groupDescription: string;
+}
 const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
   isVisible,
   onClose,
   groupId,
-//   groupName,
-//   groupDescription
-}) => { 
+  //   groupName,
+  //   groupDescription
+}) => {
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [notificationsModalOpen, setNotificationsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -160,47 +162,47 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
   const handleInvite = async () => {
     setIsLoading3(true); // Show loading state if needed
-  
+
     // Fetch user from localStorage
     const user = localStorage.getItem("user");
-  
+
     if (!Phone) {
       // Show modal for missing phone number
       setModalVisible(true);
       setModalType('warning');
       alert('Please fill the required fields');
       setIsLoading2('Try Again');
-  
-       
+
+
     } else {
-      if (user) {
+      if (user !== null) {
         const parsedUser = JSON.parse(user);
-  
+
         const userId = parsedUser.user.user_id;
         const token = parsedUser.user.token;
-  
+
         const body = {
           userid: userId,
           invited_userid: Phone,
           group_id: groupId
         };
-  
+
         // Post invite request with token
         HTTPPostWithToken(`${BASEURL}/group/invite`, body, token)
           .then((data) => {
             setModalVisible(false);
             console.log(data);
-  
+
             if (data.code === 200) {
               // Success case
               setModalVisible(true);
               setModalType('success');
-              alert(data.message); 
-  
-              setTimeout(() => { 
+              alert(data.message);
+
+              setTimeout(() => {
                 setInModalVisibles(false)
               }, 3000);
-  
+
               // Refresh relevant data
               fetchGroupData();
               fetchGroupTrans();
@@ -209,9 +211,9 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               // User doesn't exist, trigger SMS invite
               setInModalVisibles(false);
               setPhone('');
-  
+
               const smsMessage = `Hi, I am inviting you to join my group on Adashe. Download the app on Google Playstore and Apple store to join now`;
-  
+
               // Trigger SMS invitation (works on mobile devices)
               window.location.href = `sms:${Phone}?body=${encodeURIComponent(smsMessage)}`;
             } else {
@@ -264,59 +266,59 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
   });
 
   const handlePayout = async () => {
-    setIsLoading3(true); 
+    setIsLoading3(true);
     const user = await localStorage.getItem("user");
     const receiver = user_.find(
       (ex) => ex.payout_status > groupData.group_round && ex.current_round === 1
     );
     const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
+
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
     const body = {
-      userid:userId,
-      group_id:groupId,
+      userid: userId,
+      group_id: groupId,
       receiver_id: receiver ? receiver.user_id : "",
       amount: amount,
       receipt: selectedImage,
     };
     console.log(body)
-    HTTPPostWithToken(`${BASEURL}/group/processPayout`, body,token)
-    .then(data => {
-      //console.log(data) 
-      setIsLoading3(false)
-      if (data.code === 200) {
-        setModalVisible(true);
-        setModalType('success');
-        alert(data.message);
-         setTimeout(() => {
-          setPayModalVisibles(false)
-         },3000);
-        fetchGroupData();
-        fetchGroupTrans();
-        fetchGroupPayouts();
-      } else {
+    HTTPPostWithToken(`${BASEURL}/group/processPayout`, body, token)
+      .then(data => {
+        //console.log(data) 
+        setIsLoading3(false)
+        if (data.code === 200) {
+          setModalVisible(true);
+          setModalType('success');
+          alert(data.message);
+          setTimeout(() => {
+            setPayModalVisibles(false)
+          }, 3000);
+          fetchGroupData();
+          fetchGroupTrans();
+          fetchGroupPayouts();
+        } else {
+          setModalVisible(true);
+          setModalType('warning');
+          alert(data.errormessage);
+          setIsLoading('Try again');
+        }
+      })
+      .catch(error => {
         setModalVisible(true);
         setModalType('warning');
-        alert(data.errormessage);
+        alert("please retry");
         setIsLoading('Try again');
-      }
-    })
-    .catch(error => {
-      setModalVisible(true);
-      setModalType('warning');
-      alert("please retry");
-      setIsLoading('Try again');
-      onClose()
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+        onClose()
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
-}
+  }
   const scrollViewRef = useRef();
-  const openChatModal = () =>{
-    setChatModalOpen(true)  
+  const openChatModal = () => {
+    setChatModalOpen(true)
     fetchGroupChats()
     clearInterval(interval_)
     interval_ = setInterval(() => {
@@ -324,7 +326,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     }, 5000)
   };
   const closeChatModal = () => setChatModalOpen(false);
-  
+
   const openNotificationsModal = () => setNotificationsModalOpen(true);
   const closeNotificationsModal = () => setNotificationsModalOpen(false);
   const onDragEnd = (result) => {
@@ -384,7 +386,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
             sx={{ width: 35, height: 35, marginRight: '15px' }}
           />
           <Box>
-            <Typography variant="body1" sx={{ fontWeight: 'bold' ,color:"#000"}}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold', color: "#000" }}>
               {user.first_name} {user.last_name}
             </Typography>
             <Typography variant="body2" sx={{ marginTop: '6px', color: 'gray' }}>
@@ -395,10 +397,10 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       )}
     </Draggable>
   );
-  
+
   const handlePaymentRequest = async () => {
     const user = await localStorage.getItem("user");
-    
+
 
     if (amount === "") {
       setModalVisible(true);
@@ -406,23 +408,23 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       setModalMessage('Please fill the required fields');
       setIsLoading('Try Again');
 
-      
+
     } else {
-      if (user) {  
+      if (user) {
         const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-      const userId = parsedUser.user.user_id; 
-      const token = parsedUser.user.token;
+
+        const userId = parsedUser.user.user_id;
+        const token = parsedUser.user.token;
 
         var body = {
-          userid:userId,
-          group_id:groupId,
+          userid: userId,
+          group_id: groupId,
           amount: amount,
           receipt: selectedImage,
           comment: comment
         }
         // setIsLoading(<ActivityIndicator size={"small"} color={"#fff"} />);
-        HTTPPostWithToken(`${BASEURL}/payments/submit_request/`, body,token)
+        HTTPPostWithToken(`${BASEURL}/payments/submit_request/`, body, token)
           .then(data => {
             //console.log(data)
             if (data.code === 200) {
@@ -462,19 +464,19 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
   const handleConfirm = async () => {
     setConfirmModalVisible(false);
-    const user = await localStorage.getItem("user"); 
+    const user = await localStorage.getItem("user");
     const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
+
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
 
     var body = {
-      userid:userId,
+      userid: userId,
       txnid: id,
       decision: decision
     }
 
-    HTTPPatchWithToken(`${BASEURL}/payments/decide`, body,token)
+    HTTPPatchWithToken(`${BASEURL}/payments/decide`, body, token)
       .then(data => {
         setConfirmModalVisible(false);
         //console.log(data)
@@ -513,13 +515,13 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
   const fetchGroupData = async () => {
     const user = await localStorage.getItem("user");
 
-    if (user) { 
-       const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
-    const token = parsedUser.user.token;
+    if (user) {
+      const parsedUser = JSON.parse(user); // Now it's parsed properly
 
-      HTTPGetWithToken(`${BASEURL}/group/fetch/${groupId}`,token)
+      const userId = parsedUser.user.user_id;
+      const token = parsedUser.user.token;
+
+      HTTPGetWithToken(`${BASEURL}/group/fetch/${groupId}`, token)
         .then(data => {
           //console.log(data)
           if (data.code === 200) {
@@ -546,13 +548,13 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
   const fetchGroupTrans = async () => {
     const user = await localStorage.getItem("user");
 
-    if (user) {  
-       const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
-    const token = parsedUser.user.token;
+    if (user) {
+      const parsedUser = JSON.parse(user); // Now it's parsed properly
 
-      HTTPGetWithToken(`${BASEURL}/group/transactions/${groupId}`,token)
+      const userId = parsedUser.user.user_id;
+      const token = parsedUser.user.token;
+
+      HTTPGetWithToken(`${BASEURL}/group/transactions/${groupId}`, token)
         .then(data => {
           //console.log("TXN", data)
           if (data.code === 200) {
@@ -561,7 +563,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
             setRefresh(!refresh)
             setGroupTrans(data.payload)
             const txn_ = data.payload || [];
-            HTTPGetWithToken(`${BASEURL}/group/fetch/${groupId}`,token)
+            HTTPGetWithToken(`${BASEURL}/group/fetch/${groupId}`, token)
               .then(data => {
                 //console.log(data)
                 if (data.code === 200) {
@@ -601,17 +603,17 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           setLoading(false);
         });
     }
-  }; 
+  };
   const fetchGroupPayouts = async () => {
     const user = await localStorage.getItem("user");
 
-    if (user) {  
+    if (user) {
       const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
-    const token = parsedUser.user.token;
 
-      HTTPGetWithToken(`${BASEURL}/group/payouts/${groupId}`,token)
+      const userId = parsedUser.user.user_id;
+      const token = parsedUser.user.token;
+
+      HTTPGetWithToken(`${BASEURL}/group/payouts/${groupId}`, token)
         .then(data => {
           console.log("TXN", data)
           if (data.code === 200) {
@@ -633,8 +635,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
   const handleAccept = async (payoutId: string) => {
     const user = await localStorage.getItem("user");
     const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-    const userId = parsedUser.user.user_id; 
+
+    const userId = parsedUser.user.user_id;
     setLoading(true);
     const body = {
       userid: userId,
@@ -655,7 +657,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         setModalVisible(true);
         fetchGroupData();
         fetchGroupTrans();
-        fetchGroupPayouts(); 
+        fetchGroupPayouts();
       }
     } catch (error) {
       console.error("Failed to accept payout:", error);
@@ -679,23 +681,24 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     }
   }, [isVisible]);
 
-   useEffect(() => {
-  const user_auth = localStorage.getItem("user");
-  if (user_auth) {
-    const parsedUser = JSON.parse(user_auth); // Parse the user object
-    const userId = parsedUser.user.user_id; 
-    const token = parsedUser.user.token;
+  useEffect(() => {
+    const user_auth = localStorage.getItem("user");
+    
+    if (user_auth !== null) {
+      const parsedUser = JSON.parse(user_auth); // Parse the user object
+      const userId = parsedUser.user.user_id;
+      const token = parsedUser.user.token;
 
-    // Set the auth state with the user_id and token
-    setAuth({ user_id: userId, token: token });
-  }
+      // Set the auth state with the user_id and token
+      setAuth({ user_id: userId, token: token });
+    }
 
-  const timer = setTimeout(() => {
-    setLoading(false);
-  }, 5000); // 5 seconds delay for loading indicator
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 5000); // 5 seconds delay for loading indicator
 
-  return () => clearTimeout(timer);
-}, []);
+    return () => clearTimeout(timer);
+  }, []);
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
@@ -707,9 +710,9 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     if (user && groupId !== null) {
       console.log(groupId)
       const parsedUser = JSON.parse(user);
-      const userId = parsedUser.user.user_id; 
+      const userId = parsedUser.user.user_id;
       const token = parsedUser.user.token;
-      HTTPGetWithToken(`${BASEURL}/group/chats/${groupId}`,token)
+      HTTPGetWithToken(`${BASEURL}/group/chats/${groupId}`, token)
         .then(data => {
           //console.log("TXN", data)
           if (data.code === 200) {
@@ -756,7 +759,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         <Grid container justifyContent="space-between">
           {/* Group Name and Description */}
           <Grid item xs={10}>
-            <Typography variant="h6"  sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name} ({groupData.group_status})</Typography>
+            <Typography variant="h6" sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name} ({groupData.group_status})</Typography>
             <Typography variant="subtitle1" sx={{ color: '#000' }}>{groupData.group_desc}</Typography>
           </Grid>
 
@@ -772,13 +775,13 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         <Grid container spacing={2} mt={2}>
           <Grid item xs={6} textAlign="center">
             <IconButton onClick={openChatModal}>
-              <ChatIcon  sx={{color:"#4fb26e"}} fontSize="large" />
+              <ChatIcon sx={{ color: "#4fb26e" }} fontSize="large" />
             </IconButton>
             <Typography sx={{ color: '#000' }}>Chat</Typography>
           </Grid>
           <Grid item xs={6} textAlign="center">
             <IconButton onClick={openNotificationsModal}>
-              <NotificationsIcon sx={{color:"#4fb26e"}} fontSize="large" />
+              <NotificationsIcon sx={{ color: "#4fb26e" }} fontSize="large" />
             </IconButton>
             <Typography sx={{ color: '#000' }}>Notifications</Typography>
           </Grid>
@@ -789,22 +792,22 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           {/* First Row */}
           <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography variant="body1" sx={{ color: '#000' }}>Total Contribution</Typography>
-                <Typography variant="h6"sx={{ color: '#000' }}>₦ {groupData.group_value}</Typography>
+                <Typography variant="h6" sx={{ color: '#000' }}>₦ {groupData.group_value}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}> 
+          <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography variant="body1" sx={{ color: '#000' }}>Total Payout</Typography>
                 <Typography variant="h6" sx={{ color: '#000' }}>₦ {totalPayout}</Typography>
@@ -813,24 +816,24 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           </Grid>
 
           {/* Second Row */}
-          <Grid item xs={6}> 
+          <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography variant="body1" sx={{ color: '#000' }}>Payment Interval</Typography>
                 <Typography variant="h6" sx={{ color: '#000' }}>{groupData.payment_interval}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}> 
+          <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography variant="body1" sx={{ color: '#000' }}>Amount to Pay</Typography>
                 <Typography variant="h6" sx={{ color: '#000' }}>₦ {groupData.amount}</Typography>
@@ -839,35 +842,35 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           </Grid>
 
           {/* Third Row */}
-          <Grid item xs={6}> 
+          <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography sx={{ color: '#000' }} variant="body1">Next Payment</Typography>
                 <Typography sx={{ color: '#000' }} variant="h6">{groupData.next_payment ? groupData.next_payment.replace("T", " ").replace(".000Z", "") : "..."}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}> 
+          <Grid item xs={6}>
             <Card sx={{
-            backgroundColor: '#e8f9ed',
-            borderColor: '#e2e3e5',
-            boxShadow: 0
-          }}>
+              backgroundColor: '#e8f9ed',
+              borderColor: '#e2e3e5',
+              boxShadow: 0
+            }}>
               <CardContent>
                 <Typography sx={{ color: '#000' }} variant="body1">Next Payout Collector</Typography>
                 <Typography sx={{ color: '#000' }} variant="h6"> {
-                      userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
-                        userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].first_name :
-                        userDummy[0].first_name
-                    }{" "}{
-                        userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
-                          userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].last_name :
-                          userDummy[0].last_name
-                      }</Typography>
+                  userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
+                    userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].first_name :
+                    userDummy[0].first_name
+                }{" "}{
+                    userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
+                      userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].last_name :
+                      userDummy[0].last_name
+                  }</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -900,316 +903,316 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
         {/* Tab Contents */}
         {activeTab === 0 && (
-            <>
-                {/* Line Chart */}
-                <Box sx={{ width: '95%', margin: '0 auto' }}>
-                {/* {memberArray.length > 0 && memberArrayCount.length > 0 ? ( */}
-                <Box sx={{ width: '95%', margin: '0 auto',height:"220px"}}>
-                  <Line data={data} options={options} />
-                </Box>
-                {/* ) : (
+          <>
+            {/* Line Chart */}
+            <Box sx={{ width: '95%', margin: '0 auto' }}>
+              {/* {memberArray.length > 0 && memberArrayCount.length > 0 ? ( */}
+              <Box sx={{ width: '95%', margin: '0 auto', height: "220px" }}>
+                <Line data={data} options={options} />
+              </Box>
+              {/* ) : (
                     <CircularProgress size={40} sx={{ color:"#4fb26e" }} />
                 )} */}
-                </Box>
+            </Box>
 
-                {/* Members List */}
-                {groupData.host === auth.user_id ? (
-                user_.map((o, i) => (
-                  <Grid container alignItems="center" spacing={2} key={i} sx={{ marginY: 1 }}>
-                     <Paper
-                      key={user_.id}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '15px',
-                        margin: '10px 0',
-                        backgroundColor: '#e8f9ed',
-                        border: '2px solid',  // Set a thick border
-                        borderColor: '#4fb26e', // Border color
-                        width: '100%',  // Set the width to 95%
-                        cursor: 'pointer',
-                        borderRadius: '8px',
-                        boxShadow: 0
-                      }}
-                    >
-                    <Grid item xs={3} sx={{borderWidth:"10px",borderColor:"#4fb26e"}}>
-                    <Image
-                      src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
-                      alt='Logo'
-                      width={30}
-                      height={30}
-                      style={{ objectFit: 'contain' }}
-                    />
-                            </Grid>
+            {/* Members List */}
+            {groupData.host === auth.user_id ? (
+              user_.map((o, i) => (
+                <Grid container alignItems="center" spacing={2} key={i} sx={{ marginY: 1 }}>
+                  <Paper
+                    key={user_.id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '15px',
+                      margin: '10px 0',
+                      backgroundColor: '#e8f9ed',
+                      border: '2px solid',  // Set a thick border
+                      borderColor: '#4fb26e', // Border color
+                      width: '100%',  // Set the width to 95%
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      boxShadow: 0
+                    }}
+                  >
+                    <Grid item xs={3} sx={{ borderWidth: "10px", borderColor: "#4fb26e" }}>
+                      <Image
+                        src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                        alt='Logo'
+                        width={30}
+                        height={30}
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </Grid>
 
                     {/* Member Details */}
                     <Grid item xs={6}>
-                        <Typography variant="body1">{o.first_name} {o.last_name}</Typography>
-                        <Typography variant="caption">{o.created_at.substring(0, 19)}</Typography>
+                      <Typography variant="body1">{o.first_name} {o.last_name}</Typography>
+                      <Typography variant="caption">{o.created_at.substring(0, 19)}</Typography>
                     </Grid>
 
                     {/* Remove Button */}
-                    <Grid item xs={4} sx={{alignContent:"flex-end",alignItems:"flex-end"}}>
-                        <Button
+                    <Grid item xs={4} sx={{ alignContent: "flex-end", alignItems: "flex-end" }}>
+                      <Button
                         variant="contained"
                         color="error"
-                        sx={{ borderRadius: 2, alignSelf:"flex-end" }}
+                        sx={{ borderRadius: 2, alignSelf: "flex-end" }}
                         onClick={() => {
-                            // Remove user logic here
+                          // Remove user logic here
                         }}
-                        >
+                      >
                         Remove
-                        </Button>
+                      </Button>
                     </Grid>
-                    </Paper>
-                    </Grid>
-                ))
-                ) : null}
+                  </Paper>
+                </Grid>
+              ))
+            ) : null}
 
-                {/* Extra Space */}
-                <Box sx={{ height: 100 }} />
-            </>
-            )}
+            {/* Extra Space */}
+            <Box sx={{ height: 100 }} />
+          </>
+        )}
         {activeTab === 1 && (
-           <Box sx={{mb:40}}>  
-              <>
-                {payouts.map((o, i) => {
-                  return (
-                    <Box
-                      key={i}
-                      sx={{
-                        backgroundColor:
-                          o.status === 1 ? '#bef4ce' : o.status === 0 ? '#f4deb2' : '#f4b2b2',
-                        padding: 2,
-                        borderRadius: 2,
-                        marginY: 1,
-                      }}
-                    >
-                      <Grid container justifyContent="space-between" alignItems="center">
-                        <Grid item>
-                          <Typography variant="h6">
-                            {o.first_name} {o.last_name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ marginTop: 1 }}>
-                            {o.created_at.substring(0, 19)}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <Typography variant="h6" sx={{ fontSize: 14, color: '#000' }}>
-                            ₦ {o.amount}
-                          </Typography>
-                        </Grid>
+          <Box sx={{ mb: 40 }}>
+            <>
+              {payouts.map((o, i) => {
+                return (
+                  <Box
+                    key={i}
+                    sx={{
+                      backgroundColor:
+                        o.status === 1 ? '#bef4ce' : o.status === 0 ? '#f4deb2' : '#f4b2b2',
+                      padding: 2,
+                      borderRadius: 2,
+                      marginY: 1,
+                    }}
+                  >
+                    <Grid container justifyContent="space-between" alignItems="center">
+                      <Grid item>
+                        <Typography variant="h6">
+                          {o.first_name} {o.last_name}
+                        </Typography>
+                        <Typography variant="body2" sx={{ marginTop: 1 }}>
+                          {o.created_at.substring(0, 19)}
+                        </Typography>
                       </Grid>
+                      <Grid item>
+                        <Typography variant="h6" sx={{ fontSize: 14, color: '#000' }}>
+                          ₦ {o.amount}
+                        </Typography>
+                      </Grid>
+                    </Grid>
 
-                      {o.receipt ? (
-                        <Button
-                          onClick={() => window.open(o.receipt, '_blank')}
-                          sx={{ marginTop: 2, borderRadius: 2, overflow: 'hidden' }}
-                        >
-                          <Image src={o.receipt} alt="Receipt" width={300} height={120} style={{ width: '100%', height: 'auto' }} />
-                        </Button>
-                      ) : null}
-                    </Box>
-                  );
-                })}
-                <Box sx={{ height: 200 }} />
-              </>
-         </Box>
+                    {o.receipt ? (
+                      <Button
+                        onClick={() => window.open(o.receipt, '_blank')}
+                        sx={{ marginTop: 2, borderRadius: 2, overflow: 'hidden' }}
+                      >
+                        <Image src={o.receipt} alt="Receipt" width={300} height={120} style={{ width: '100%', height: 'auto' }} />
+                      </Button>
+                    ) : null}
+                  </Box>
+                );
+              })}
+              <Box sx={{ height: 200 }} />
+            </>
+          </Box>
         )}
         {activeTab === 2 && (
           <Box>
-             <>
-      <Box sx={{ padding: 2 }}>
-        {/* Amount Input */}
-        <Typography sx={{ marginBottom: 1 }}>Amount</Typography>
-        <TextField
-          fullWidth
-          placeholder="Enter amount"
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)} 
-          sx={{
-            marginBottom: 4,
-            '& .MuiOutlinedInput-root': {
-              '&.Mui-focused fieldset': {
-                borderColor: '#d96b60', // Border color on focus
-              },
-              '& input::placeholder': {
-                color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
-              },
-              '&.Mui-focused input::placeholder': {
-                color: '#4fb26e', // Placeholder color on focus
-              }
-            },
-            '& .MuiInputLabel-root': {
-              color: 'rgba(0, 0, 0, 0.54)', // Default label color
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: '#4fb26e', // Label color when focused
-            }
-          }}
-        />
+            <>
+              <Box sx={{ padding: 2 }}>
+                {/* Amount Input */}
+                <Typography sx={{ marginBottom: 1 }}>Amount</Typography>
+                <TextField
+                  fullWidth
+                  placeholder="Enter amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  sx={{
+                    marginBottom: 4,
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#d96b60', // Border color on focus
+                      },
+                      '& input::placeholder': {
+                        color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+                      },
+                      '&.Mui-focused input::placeholder': {
+                        color: '#4fb26e', // Placeholder color on focus
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.54)', // Default label color
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#4fb26e', // Label color when focused
+                    }
+                  }}
+                />
 
-        {/* Image Upload */}
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            backgroundColor: "#f7f7f7",
-            color: "black",
-            width: "100%",
-            padding: 2,
-            borderRadius: 2,
-            marginBottom: 2,
-            '&:hover': { // Define the hover state here
-              backgroundColor: "#d96b60",
-            },
-          }}
-        >
-          {isReceiptSelected}
-          <input type="file" hidden onChange={handleImageUpload} />
-        </Button>
+                {/* Image Upload */}
+                <Button
+                  variant="contained"
+                  component="label"
+                  sx={{
+                    backgroundColor: "#f7f7f7",
+                    color: "black",
+                    width: "100%",
+                    padding: 2,
+                    borderRadius: 2,
+                    marginBottom: 2,
+                    '&:hover': { // Define the hover state here
+                      backgroundColor: "#d96b60",
+                    },
+                  }}
+                >
+                  {isReceiptSelected}
+                  <input type="file" hidden onChange={handleImageUpload} />
+                </Button>
 
-        {isReceiptSelected === "Uploaded" && selectedImage && (
-          <Box sx={{ textAlign: "center", marginY: 2 }}>
-            <img
-              src={selectedImage}
-              alt="Uploaded Receipt"
-              style={{
-                width: 250,
-                height: 200,
-                objectFit: "cover",
-                borderRadius: 8,
-                
-              }}
-            />
-          </Box>
-        )}
+                {isReceiptSelected === "Uploaded" && selectedImage && (
+                  <Box sx={{ textAlign: "center", marginY: 2 }}>
+                    <img
+                      src={selectedImage}
+                      alt="Uploaded Receipt"
+                      style={{
+                        width: 250,
+                        height: 200,
+                        objectFit: "cover",
+                        borderRadius: 8,
 
-        {/* Comment Input */}
-        <Typography sx={{ marginBottom: 1 }}>Comment</Typography>
-        <TextField
-          fullWidth
-          placeholder="Enter comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          sx={{
-            marginBottom: 4,
-            '& .MuiOutlinedInput-root': {
-              '&.Mui-focused fieldset': {
-                borderColor: '#d96b60', // Border color on focus
-              },
-              '& input::placeholder': {
-                color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
-              },
-              '&.Mui-focused input::placeholder': {
-                color: '#4fb26e', // Placeholder color on focus
-              }
-            },
-            '& .MuiInputLabel-root': {
-              color: 'rgba(0, 0, 0, 0.54)', // Default label color
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: '#4fb26e', // Label color when focused
-            }
-          }}
-        />
+                      }}
+                    />
+                  </Box>
+                )}
 
-        {/* Submit Button */}
-        <Button
-          onClick={handlePaymentRequest}
-          sx={{
-            width: "95%",
-            height: 60,
-            borderRadius: 2,
-            backgroundColor: "#4fb26e",
-            color: "#fff",
-            justifyContent: "center",
-            alignItems: "center",
-            alignSelf: "center",
-            marginTop: 3,
-            boxShadow: 8,
-            '&:hover': { // Define the hover state here
-              backgroundColor: "#d96b60",
-            },
-          }}
-        >
-          Proceed
-        </Button>
-      </Box>
+                {/* Comment Input */}
+                <Typography sx={{ marginBottom: 1 }}>Comment</Typography>
+                <TextField
+                  fullWidth
+                  placeholder="Enter comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  sx={{
+                    marginBottom: 4,
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#d96b60', // Border color on focus
+                      },
+                      '& input::placeholder': {
+                        color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+                      },
+                      '&.Mui-focused input::placeholder': {
+                        color: '#4fb26e', // Placeholder color on focus
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.54)', // Default label color
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#4fb26e', // Label color when focused
+                    }
+                  }}
+                />
 
-      {/* Extra space */}
-      <Box sx={{ height: 100 }} />
-    </>
+                {/* Submit Button */}
+                <Button
+                  onClick={handlePaymentRequest}
+                  sx={{
+                    width: "95%",
+                    height: 60,
+                    borderRadius: 2,
+                    backgroundColor: "#4fb26e",
+                    color: "#fff",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignSelf: "center",
+                    marginTop: 3,
+                    boxShadow: 8,
+                    '&:hover': { // Define the hover state here
+                      backgroundColor: "#d96b60",
+                    },
+                  }}
+                >
+                  Proceed
+                </Button>
+              </Box>
+
+              {/* Extra space */}
+              <Box sx={{ height: 100 }} />
+            </>
           </Box>
         )}
 
         {/* Bottom Fixed Tabs */}
 
         {groupData.host === auth.user_id && (
-        <Grid
-          container
-          justifyContent="space-around"
-          sx={{
-            position:'sticky', // Keep it at the bottom of the modal, not the page
-            backgroundColor: '#fff',
-            borderTop: '1px solid #ddd',
-            boxShadow: 3,
-            py: 2,
-          }}
-        > 
-          <Grid item xs={3} textAlign="center">
-            <IconButton onClick={() => {setModalVisibles(true)}}>
-              <ManageAccountsIcon sx={{color:"#4fb26e"}}/>
-            </IconButton>
-            <Typography sx={{ color: '#000' }} variant="body2">Manage Group</Typography>
-          </Grid>
-          
-          <Grid item xs={3} textAlign="center">
-            <IconButton onClick={() => {setHisModalVisibles(true)}}>
-              <HistoryIcon sx={{color:"#4fb26e"}} />
-            </IconButton>
-            <Typography sx={{ color: '#000' }} variant="body2">Contribution History</Typography>
-          </Grid>
+          <Grid
+            container
+            justifyContent="space-around"
+            sx={{
+              position: 'sticky', // Keep it at the bottom of the modal, not the page
+              backgroundColor: '#fff',
+              borderTop: '1px solid #ddd',
+              boxShadow: 3,
+              py: 2,
+            }}
+          >
+            <Grid item xs={3} textAlign="center">
+              <IconButton onClick={() => { setModalVisibles(true) }}>
+                <ManageAccountsIcon sx={{ color: "#4fb26e" }} />
+              </IconButton>
+              <Typography sx={{ color: '#000' }} variant="body2">Manage Group</Typography>
+            </Grid>
 
-          <Grid item xs={3} textAlign="center">
-            <IconButton onClick={() => {setPayModalVisibles(true)}}>
-              <AttachMoneyIcon sx={{color:"#4fb26e"}}/>
-            </IconButton>
-            <Typography sx={{ color: '#000' }}variant="body2">Process Payout</Typography>
-          </Grid>
+            <Grid item xs={3} textAlign="center">
+              <IconButton onClick={() => { setHisModalVisibles(true) }}>
+                <HistoryIcon sx={{ color: "#4fb26e" }} />
+              </IconButton>
+              <Typography sx={{ color: '#000' }} variant="body2">Contribution History</Typography>
+            </Grid>
 
-          <Grid item xs={3} textAlign="center">
-            <IconButton onClick={() => {setInModalVisibles(true)}}>
-              <PersonAddIcon sx={{color:"#4fb26e"}} />
-            </IconButton>
-            <Typography sx={{ color: '#000' }}variant="body2">Invite</Typography>
+            <Grid item xs={3} textAlign="center">
+              <IconButton onClick={() => { setPayModalVisibles(true) }}>
+                <AttachMoneyIcon sx={{ color: "#4fb26e" }} />
+              </IconButton>
+              <Typography sx={{ color: '#000' }} variant="body2">Process Payout</Typography>
+            </Grid>
+
+            <Grid item xs={3} textAlign="center">
+              <IconButton onClick={() => { setInModalVisibles(true) }}>
+                <PersonAddIcon sx={{ color: "#4fb26e" }} />
+              </IconButton>
+              <Typography sx={{ color: '#000' }} variant="body2">Invite</Typography>
+            </Grid>
           </Grid>
-        </Grid>
         )}
 
-        {/* Chat Modal */} 
-        <Modal open={chatModalOpen}  onClose={closeChatModal}>
-        <div style={{ backgroundColor: "#f0f0f0", paddingTop: 20, height: '100%', position: 'relative' }}>
-        <IconButton 
-            onClick={() => {closeChatModal()}} 
-            style={{ position: 'absolute', left: 20, padding: 5, backgroundColor:"#4fb26e", color: "#fff" }}
-        >
-            <ArrowBackIcon fontSize="large" />
-        </IconButton>
+        {/* Chat Modal */}
+        <Modal open={chatModalOpen} onClose={closeChatModal}>
+          <div style={{ backgroundColor: "#f0f0f0", paddingTop: 20, height: '100%', position: 'relative' }}>
+            <IconButton
+              onClick={() => { closeChatModal() }}
+              style={{ position: 'absolute', left: 20, padding: 5, backgroundColor: "#4fb26e", color: "#fff" }}
+            >
+              <ArrowBackIcon fontSize="large" />
+            </IconButton>
 
             {/* Chat Messages */}
-            <div 
-            ref={scrollViewRef}
-            style={{ overflowY: 'auto', height: '90%', padding: '10px 20px' }}
+            <div
+              ref={scrollViewRef}
+              style={{ overflowY: 'auto', height: '90%', padding: '10px 20px' }}
             >
-            <p style={{ textAlign: 'center', marginBottom: 10 }}>---Chat Started---</p>
-            {
+              <p style={{ textAlign: 'center', marginBottom: 10 }}>---Chat Started---</p>
+              {
                 chats.map((o, i) => {
-                return (
-                    <div key={i} 
-                    style={{
+                  return (
+                    <div key={i}
+                      style={{
                         alignSelf: o.user_id === auth.user_id ? 'flex-end' : 'flex-start',
                         backgroundColor: o.user_id === auth.user_id ? `#4fb26e` : "#fff",
                         width: 300,
@@ -1219,646 +1222,659 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         padding: 15,
                         marginBottom: '10px',
                         boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)'
-                    }}
+                      }}
                     >
-                    <p style={{ fontSize: 12 }}>{o.username}</p>
-                    <p style={{ fontSize: 14 }}>{o.message}</p>
-                    <p style={{ fontSize: 12, textAlign: 'right' }}>{o.created_at.substring(0, 19).replace("T", " ")}</p>
+                      <p style={{ fontSize: 12 }}>{o.username}</p>
+                      <p style={{ fontSize: 14 }}>{o.message}</p>
+                      <p style={{ fontSize: 12, textAlign: 'right' }}>{o.created_at.substring(0, 19).replace("T", " ")}</p>
                     </div>
-                );
+                  );
                 })
-            }
+              }
             </div>
 
             {/* Chat Input */}
             <div style={{ height: '10%', padding: '0 10px', display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ width: '88%', display: 'flex', alignItems: 'center' }}>
-                <textarea 
-                value={message} 
-                style={{ backgroundColor: "#e2e3e550", padding: 15, borderRadius: 10, height: 55, width: '100%', resize: 'none', border: '1px solid #ccc' }} 
-                placeholder='Enter Chat' 
-                rows={2}
-                onChange={(e) => setMessage(e.target.value)}
+              <div style={{ width: '88%', display: 'flex', alignItems: 'center' }}>
+                <textarea
+                  value={message}
+                  style={{ backgroundColor: "#e2e3e550", padding: 15, borderRadius: 10, height: 55, width: '100%', resize: 'none', border: '1px solid #ccc' }}
+                  placeholder='Enter Chat'
+                  rows={2}
+                  onChange={(e) => setMessage(e.target.value)}
                 />
-            </div>
-            <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                <button 
-                style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}
-                onClick={async () => {
+              </div>
+              <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <button
+                  style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onClick={async () => {
                     setMessage("");
                     const user = await localStorage.getItem("user");
                     const parsedUser = JSON.parse(user);
                     var body = {
-                    userid: parsedUser.user_id,
-                    // group_id: groupId,
-                    message: message
+                      userid: parsedUser.user_id,
+                      // group_id: groupId,
+                      message: message
                     };
                     HTTPPostWithToken(`${BASEURL}/group/sendMessage`, body, parsedUser.token)
-                    .then(data => {
+                      .then(data => {
                         // handle success
-                    })
-                    .catch(error => {
+                      })
+                      .catch(error => {
                         // handle error
-                    })
-                    .finally(() => {
+                      })
+                      .finally(() => {
                         // final actions
-                    });
-                }}
+                      });
+                  }}
                 >
-                 <SendIcon fontSize="large" style={{ color:"#4fb26e" }} />
+                  <SendIcon fontSize="large" style={{ color: "#4fb26e" }} />
                 </button>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
         </Modal>
 
 
         {/* Notifications Modal */}
         <Modal open={notificationsModalOpen} onClose={closeNotificationsModal}>
-        <Box sx={{backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', margin: '5vh', overflowY: 'auto', position: 'relative',  }}>
+          <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', maxWidth: "100vh", margin: '5vh auto', overflowY: 'auto', position: 'relative', }}>
             {/* Header with Close Button */}
             <Grid container justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" component="h2">
+              <Typography variant="h6" component="h2">
                 Notifications
-            </Typography>
-            <IconButton sx={{ backgroundColor: 'red', color: '#fff' }}
+              </Typography>
+              <IconButton sx={{ backgroundColor: 'red', color: '#fff' }}
                 onClick={closeNotificationsModal}
-            >
+              >
                 <CloseIcon style={{ color: "#fff" }} />
-            </IconButton>
+              </IconButton>
             </Grid>
 
             {/* Notifications Content */}
             <ScrollBar>
-          {payouts
-            .filter((ex) => ex.status === 0)
-            .map((o, i) => (
-              <Box
-                key={i}
-                sx={{
-                  backgroundColor: o.status === 1 ? "#bef4ce" : o.status === 0 ? "#f4deb2" : "#f4b2b2",
-                  p: 2,
-                  borderRadius: 2,
-                  mb: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box>
-                    <Typography>{o.first_name} {o.last_name}</Typography>
-                    <Typography sx={{ mt: 1, fontSize: 14 }}>
-                      {o.created_at.substring(0, 19)}
-                    </Typography>
-                  </Box>
-                  <Typography sx={{ fontSize: 14, color: "#000" }}>
-                    ₦ {o.amount}
-                  </Typography>
-                </Box>
-
-                {o.receipt && (
-                  <ImageList sx={{ mt: 2 }} cols={1}>
-                    <ImageListItem>
-                      <img
-                        src={o.receipt}
-                        alt="Receipt"
-                        loading="lazy"
-                        style={{ borderRadius: 8 }}
-                      />
-                    </ImageListItem>
-                  </ImageList>
-                )}
-
-                {o.status === 0 && groupDataHost === user_id && (
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    onClick={() => handleAccept(o.id)}
-                    disabled={loading}
+              {payouts
+                .filter((ex) => ex.status === 0)
+                .map((o, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      backgroundColor: o.status === 1 ? "#bef4ce" : o.status === 0 ? "#f4deb2" : "#f4b2b2",
+                      p: 2,
+                      borderRadius: 2,
+                      mb: 2,
+                    }}
                   >
-                    Accept
-                  </Button>
-                )}
-              </Box>
-            ))}
-        </ScrollBar>
-        </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Box>
+                        <Typography>{o.first_name} {o.last_name}</Typography>
+                        <Typography sx={{ mt: 1, fontSize: 14 }}>
+                          {o.created_at.substring(0, 19)}
+                        </Typography>
+                      </Box>
+                      <Typography sx={{ fontSize: 14, color: "#000" }}>
+                        ₦ {o.amount}
+                      </Typography>
+                    </Box>
+
+                    {o.receipt && (
+                      <ImageList sx={{ mt: 2 }} cols={1}>
+                        <ImageListItem>
+                          <img
+                            src={o.receipt}
+                            alt="Receipt"
+                            loading="lazy"
+                            style={{ borderRadius: 8 }}
+                          />
+                        </ImageListItem>
+                      </ImageList>
+                    )}
+
+                    {o.status === 0 && o.host === auth.user_id && (
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        onClick={() => handleAccept(o.id)}
+                        disabled={loading}
+                      >
+                        Accept
+                      </Button>
+                    )}
+                  </Box>
+                ))}
+            </ScrollBar>
+          </Box>
         </Modal>
-        
+
         {/* manage g */}
         <Modal
-            open={modalVisibles} // Modal should appear when modalVisibles is true
-            onClose={() => setModalVisibles(null)}
-            >
-            <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', margin: '5vh', overflowY: 'auto', position: 'relative' }}>
-                {/* Header with Close Button */}
-                <Grid container justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" component="h2" sx={{fontWeight:"bold",color:"#000"}} >
-                    Manage Group
-                </Typography>
-                <IconButton
-                   sx={{ backgroundColor: 'red', color: '#fff' }}
-                    onClick={() => setModalVisibles(null)}
-                >
-                    <CloseIcon style={{ color: "#fff" }} />
-                </IconButton>
-                </Grid>
+          open={modalVisibles} // Modal should appear when modalVisibles is true
+          onClose={() => setModalVisibles(null)}
+        >
+          <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', maxWidth: "100vh", margin: '5vh auto', overflowY: 'auto', position: 'relative' }}>
+            {/* Header with Close Button */}
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Typography variant="h6" component="h2" sx={{ fontWeight: "bold", color: "#000" }} >
+                Manage Group
+              </Typography>
+              <IconButton
+                sx={{ backgroundColor: 'red', color: '#fff' }}
+                onClick={() => setModalVisibles(null)}
+              >
+                <CloseIcon style={{ color: "#fff" }} />
+              </IconButton>
+            </Grid>
 
-                {/* Manage Group Content */}
-                <ScrollBar style={{ height: '70vh' }}>
-                {groupData.group_status === "running" ? (
-                    <>
-                    <Typography variant="body1" style={{ marginBottom: '10px' }}>Drag to arrange members</Typography>
-                    {/* Render draggable list of members */}
-                    <DragDropContext onDragEnd={onDragEnd}>
+            {/* Manage Group Content */}
+            <ScrollBar style={{ height: '70vh' }}>
+              {groupData.group_status === "running" ? (
+                <>
+                  <Typography variant="body1" style={{ marginBottom: '10px' }}>Drag to arrange members</Typography>
+                  {/* Render draggable list of members */}
+                  <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="usersList">
-                    {(provided) => (
+                      {(provided) => (
                         <Box
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        sx={{ width: '100%' }}
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          sx={{ width: '100%' }}
                         >
-                        {users.map((user, index) => renderItem(user, index))}
-                        {provided.placeholder}
+                          {users.map((user, index) => renderItem(user, index))}
+                          {provided.placeholder}
                         </Box>
-                    )}
+                      )}
                     </Droppable>
-                </DragDropContext>
-                    </>
-                ) : (
-                    <>
-                    <Typography variant="body1" style={{ marginBottom: '10px' }}>Start Group</Typography>
+                  </DragDropContext>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body1" style={{ marginBottom: '10px' }}>Start Group</Typography>
 
-                    {/* Start Date Picker */}
-                    <Typography >Pick a start date</Typography>
-                    <Box sx={{
-                        width: "100%",
-                        height: 60,
-                        justifyContent: "center",
-                        backgroundColor: "#f7f7f7",
-                        borderRadius: 12,
-                        paddingLeft: '15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer'
-                    }} onClick={() => setShowDatePicker(true)}>
-                        <Typography>{startingDate instanceof Date && !isNaN(startingDate) ? startingDate.toLocaleDateString() : 'Select date'}</Typography>
-                    </Box>
+                  {/* Start Date Picker */}
+                  <Typography >Pick a start date</Typography>
+                  <Box sx={{
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "center",
+                    backgroundColor: "#f7f7f7",
+                    borderRadius: 12,
+                    paddingLeft: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }} onClick={() => setShowDatePicker(true)}>
+                    <Typography>{startingDate instanceof Date && !isNaN(startingDate) ? startingDate.toLocaleDateString() : 'Select date'}</Typography>
+                  </Box>
 
-                    {showDatePicker && (
-                        <DatePicker
-                        value={startingDate}
-                        onChange={(newDate) => {
-                            setStartingDate(new Date(newDate)); // Ensure valid Date object
-                            setShowDatePicker(false); // Close the date picker after selection
-                        }}
-                        renderInput={(params) => <TextField {...params} />}
-                        />
-                    )}
+                  {showDatePicker && (
+                    <DatePicker
+                      value={startingDate}
+                      onChange={(newDate) => {
+                        setStartingDate(new Date(newDate)); // Ensure valid Date object
+                        setShowDatePicker(false); // Close the date picker after selection
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  )}
 
-                    {/* Start Group Button */}
-                    <Button
-                        variant="contained"
-                        sx={{
-                        width: "100%",
-                        height: '45px',
-                        borderRadius: '16px',
-                        backgroundColor:"#4fb26e",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: '10px',         
-                        '&:hover': { // Define the hover state here
-                          backgroundColor: "#d96b60",
-                        },               
-                       }}
-                       onClick={async () => {
-                        setIsLoading3(true);
-                        const user = await localStorage.getItem("user"); 
-                        const parsedUser = JSON.parse(user); // Parse the stored user
-                      
-                        const userId = parsedUser.user.user_id; 
-                        const token = parsedUser.user.token;
-                      
-                        // Format the start date as MM-DD-YYYY
-                        const formattedDate = startingDate instanceof Date && !isNaN(startingDate)
-                          ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(startingDate)
-                          : '';
-                      
-                        const body = {
-                          userid: userId,
-                          start_date: formattedDate, // Use formatted date here
-                          group_id: groupId,
-                        };
-                      
-                        console.log("BOB", body);
-                      
-                        // Convert the body object to a JSON string
-                        // const bodyString = JSON.stringify(body);
-                      
-                        HTTPPostWithToken(`${BASEURL}/group/startGroup`, body, token)
-                          .then(data => {
-                            console.log("PES", data);
-                            if (data.code === 200) { 
-                              setIsLoading3(false); 
-                              setModalVisible(true);
-                              setModalType('success');
-                              setModalMessage(data.message);
-                              setTimeout(() => {
-                                setModalVisible(false);
-                              }, 3000);
-                              fetchGroupData();
-                              fetchGroupTrans();
-                              fetchGroupPayouts();
-                            } else { 
-                              setIsLoading3(false); 
-                              setModalVisible(true);
-                              setModalType('warning');
-                              alert(data.errorMessage);
-                            }
-                          })
-                          .catch(() => { 
-                            setIsLoading3(false); 
+                  {/* Start Group Button */}
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      height: '45px',
+                      borderRadius: '16px',
+                      backgroundColor: "#4fb26e",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: '10px',
+                      '&:hover': { // Define the hover state here
+                        backgroundColor: "#d96b60",
+                      },
+                    }}
+                    onClick={async () => {
+                      setIsLoading3(true);
+                      const user = await localStorage.getItem("user");
+                      const parsedUser = JSON.parse(user); // Parse the stored user
+
+                      const userId = parsedUser.user.user_id;
+                      const token = parsedUser.user.token;
+
+                      // Format the start date as MM-DD-YYYY
+                      const formattedDate = startingDate instanceof Date && !isNaN(startingDate)
+                        ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(startingDate)
+                        : '';
+
+                      const body = {
+                        userid: userId,
+                        start_date: formattedDate, // Use formatted date here
+                        group_id: groupId,
+                      };
+
+                      console.log("BOB", body);
+
+                      // Convert the body object to a JSON string
+                      // const bodyString = JSON.stringify(body);
+
+                      HTTPPostWithToken(`${BASEURL}/group/startGroup`, body, token)
+                        .then(data => {
+                          console.log("PES", data);
+                          if (data.code === 200) {
+                            setIsLoading3(false);
+                            setModalVisible(true);
+                            setModalType('success');
+                            setModalMessage(data.message);
+                            setTimeout(() => {
+                              setModalVisible(false);
+                            }, 3000);
+                            fetchGroupData();
+                            fetchGroupTrans();
+                            fetchGroupPayouts();
+                          } else {
+                            setIsLoading3(false);
                             setModalVisible(true);
                             setModalType('warning');
-                            setModalMessage("please retry");
-                          })
-                          .finally(() => { 
-                            setIsLoading3(false);  
-                          });
-                      }}
-                      
-                    >
-                         {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Start Group'}
-                    </Button>
-                    </>
-                )}
-
-                {/* Extra Spacing */}
-                <Box sx={{ height: '100px' }} />
-                </ScrollBar>
-            </Box>
-            </Modal>
-
-            {/* history */} 
-
-            <Modal
-            open={hismodalVisible}
-            onClose={() => setHisModalVisibles(null)}
-            >
-            <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', margin: '5vh', overflowY: 'auto', position: 'relative' }}>
-                {/* Header with Close Button */}
-                <Grid container justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" component="h2" sx={{fontWeight:"bold", color:"#000"}} >
-                    Contribution History
-                </Typography>
-                <IconButton
-                   sx={{ backgroundColor: 'red', color: '#fff' }}
-                    onClick={() => setHisModalVisibles(null)}
-                >
-                    <CloseIcon style={{ color: "#fff" }} />
-                </IconButton>
-                </Grid>
-
-                {/* Contribution His  tory */}
-                <ScrollBar style={{ height: '70vh' }}>
-                {groupTrans.length === 0 ? (
-                    <Typography variant="body1" align="center" sx={{ marginTop: 2, fontSize: 16, color: '#333' }}>
-                    No transactions yet
-                    </Typography>
-                ) : (
-                    groupTrans.map((o, i) => (
-                    <Card key={i} sx={{ backgroundColor: o.status === 1 ? "#bef4ce" : o.status === 0 ? "#f4deb2" : "#f4b2b2", padding: '10px', borderRadius: '10px', marginBottom: '10px' }}>
-                        <CardContent>
-                        <Grid container justifyContent="space-between">
-                            <Box>
-                            <Typography variant="body1" sx={{fontWeight:"bold",color:"#000"}}>
-                                {user_.filter(ex => ex.user_id === o.user_id)[0].first_name} {user_.filter(ex => ex.user_id === o.user_id)[0].last_name}
-                            </Typography>
-                            <Typography variant="caption" sx={{ marginTop: 1 }}>
-                                {o.created_at.substring(0, 19)}
-                            </Typography>
-                            </Box>
-                            <Typography variant="body1" color="textPrimary" sx={{fontWeight:"bold",color:"#000"}}>
-                            ₦ {o.amount}
-                            </Typography>
-                        </Grid>
-
-                        <Typography variant="subtitle2" sx={{ marginTop: 1, fontWeight: 600,color:"#000" }}>Comment</Typography>
-                        <Typography variant="body2" sx={{ marginTop: 1, fontWeight: 900 }}>{o.comment}</Typography>
-
-                        {/* Receipt Image */}
-                        {o.receipt && (
-                            <CardMedia
-                            component="img"
-                            image={o.receipt}
-                            alt="Receipt"
-                            sx={{ height: 120, marginY: '10px', borderRadius: '10px' }}
-                            onClick={() => window.open(o.receipt)}
-                            />
-                        )}
-
-                        {/* Approve/Reject Buttons */}
-                        {o.status === 0 && groupData.host === auth.user_id && (
-                            <Grid container justifyContent="space-between" spacing={2} sx={{ marginTop: 2 }}>
-                            <Grid item xs={6}>
-                                <Button
-                                fullWidth
-                                variant="contained"
-                                sx={{ backgroundColor: "#fff", color: "#000", borderRadius: '12px','&:hover': { // Define the hover state here
-                                  backgroundColor: "#4fb26e",
-                                }, }}
-                                onClick={() => {
-                                    setDecision(1);
-                                    setId(o.id);
-                                    return handleApprovePress();
-                                }}
-                                >
-                                Approve
-                                </Button>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Button
-                                fullWidth
-                                variant="contained"
-                                sx={{ backgroundColor: "red", color: "#fff", borderRadius: '12px','&:hover': { // Define the hover state here
-                                  backgroundColor: "#d96b60",
-                                }, }}
-                                onClick={() => {
-                                    setDecision(2);
-                                    setId(o.id);
-                                    return handleApprovePress();
-                                }}
-                                >
-                                Reject
-                                </Button>
-                            </Grid>
-                            </Grid>
-                        )}
-                        </CardContent>
-                    </Card>
-                    ))
-                )}
-                {/* Spacing at the bottom */}
-                <Box sx={{ height: '200px' }} />
-                </ScrollBar>
-            </Box>
-            </Modal>
-
-            {/* payout */}
-            <Modal
-            open={paymodalVisible}
-            onClose={() => setPayModalVisibles(false)}
-            aria-labelledby="modal-title"
-            aria-describedby="modal-description"
-            > 
-             <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', margin: '5vh', overflowY: 'auto', position: 'relative' }}>
-                
-                <Box sx={styles.headerContainer}>
-                    <Typography variant="h6" sx={{fontWeight:"bold",color:"#000"}}>Process Payout</Typography>
-                    <IconButton onClick={() => setPayModalVisibles(false)}>
-                   {/* sx={{ backgroundColor: 'red', color: '#fff' }} */}
-                    <CloseIcon />
-                    </IconButton>
-                </Box>
-
-                <Box sx={{ marginTop: 2 }}>
-                    <Typography sx={styles.label} sx={{fontWeight:"bold",color:"#000"}}>Amount</Typography>
-                    <TextField
-                    fullWidth
-                    placeholder="Enter amount"
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    sx={{
-                      marginBottom: 4,
-                      '& .MuiOutlinedInput-root': {
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#d96b60', // Border color on focus
-                        },
-                        '& input::placeholder': {
-                          color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
-                        },
-                        '&.Mui-focused input::placeholder': {
-                          color: '#4fb26e', // Placeholder color on focus
-                        }
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: 'rgba(0, 0, 0, 0.54)', // Default label color
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#4fb26e', // Label color when focused
-                      }
+                            alert(data.errorMessage);
+                          }
+                        })
+                        .catch(() => {
+                          setIsLoading3(false);
+                          setModalVisible(true);
+                          setModalType('warning');
+                          setModalMessage("please retry");
+                        })
+                        .finally(() => {
+                          setIsLoading3(false);
+                        });
                     }}
-                    />
-                </Box>
 
-                <Box {...getRootProps()} sx={styles.dropzone}>
-                    <input {...getInputProps()} />
-                    <Typography>{isReceiptSelected}</Typography>
-                    {selectedImage && (
-                    <img src={selectedImage} alt="Receipt" style={styles.image} />
-                    )}
-                </Box>
+                  >
+                    {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Start Group'}
+                  </Button>
+                </>
+              )}
 
-                <Box sx={{ marginTop: 2 }}>
-                    <Typography sx={styles.label} >Processing payout to:</Typography>
-                    <Typography>
-                     {
-                      userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
-                        userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].first_name :
-                        userDummy[0].first_name
-                    }{" "}{
-                        userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
-                          userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].last_name :
-                          userDummy[0].last_name
-                      }
-                    </Typography>
-                </Box>
+              {/* Extra Spacing */}
+              <Box sx={{ height: '100px' }} />
+            </ScrollBar>
+          </Box>
+        </Modal>
 
-                <Button
-                    onClick={handlePayout}
-                    fullWidth
-                    variant="contained" 
-                    sx={{...styles.submitButton,'&:hover': { // Define the hover state here
-                      backgroundColor: "#d96b60",
-                    },} }
-                > 
-                    {isLoading3 ? <CircularProgress size={24} /> : "Submit"}
-                </Button> 
-            </Box>
-            </Modal>
+        {/* history */}
 
-            {/* invite */}
-            <Modal
-                open={inmodalVisible} // Modal should appear when inmodalVisible is true
-                onClose={() => setInModalVisibles(null)}
-                >
-                <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', margin: '5vh', overflowY: 'auto', position: 'relative' }}>
-                    {/* Header with Close Button */}
-                    <Grid container justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" component="h2" style={styles.activeTabText}>
-                        Invite a Member
-                    </Typography>
-                    <IconButton 
-                   sx={{ backgroundColor: 'red', color: '#fff' }}
-                        onClick={() => setInModalVisibles(null)}
-                    >
-                        <CloseIcon style={{ color: "#fff" }} />
-                    </IconButton>
-                    </Grid>
-
-                    {/* Invite Form */}
-                    <ScrollBar style={{ height: '70vh' }}>
-                    <Typography variant="body1" sx={{ marginBottom: '15px', fontSize: '16px', fontWeight: 'bold' }}>
-                        Phone Number
-                    </Typography>
-
-                    {/* Phone Number Input */}
-                    <Box sx={{ width: '100%', height: '60px', display: 'flex', alignItems: 'center', backgroundColor: '#f7f7f7', borderRadius: '12px', paddingLeft: '15px' }}>
-                        <TextField
-                        placeholder="Enter user phone number"
-                        type="tel"
-                        fullWidth
-                        variant="standard"
-                        onChange={(e) => setPhone(e.target.value)}
-                        InputProps={{
-                            disableUnderline: true,
-                            style: { height: '100%' },
-                        }}
-                        />
-                    </Box>
-
-                    {/* Invite Button */}
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleInvite} 
-                        sx={{...styles.submitButton,'&:hover': { // Define the hover state here
-                          backgroundColor: "#d96b60",
-                        },} }
-                    >
-                       {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Invite'}  
-                    </Button>
-
-                    {/* Spacing at the bottom */}
-                    <Box sx={{ height: '200px' }} />
-                    </ScrollBar>
-                </Box>
-                </Modal>
-
-
-                <Modal
-                open={isConfirmModalVisible}
-                onClose={() => setConfirmModalVisible(false)}
-                aria-labelledby="confirm-decision-modal"
-                aria-describedby="confirm-decision-description"
+        <Modal
+          open={hismodalVisible}
+          onClose={() => setHisModalVisibles(null)}
+        >
+          <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', maxWidth: "100vh", margin: '5vh auto', overflowY: 'auto', position: 'relative' }}>
+            {/* Header with Close Button */}
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Typography variant="h6" component="h2" sx={{ fontWeight: "bold", color: "#000" }} >
+                Contribution History
+              </Typography>
+              <IconButton
+                sx={{ backgroundColor: 'red', color: '#fff' }}
+                onClick={() => setHisModalVisibles(null)}
               >
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: { xs: 300, md: 400 },
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    borderRadius: 2,
-                    p: 4,
-                  }}
-                >
-                  {/* Title */}
-                  <Typography id="confirm-decision-modal" variant="h6" sx={{ mb: 2 }}>
-                    Confirm Decision
-                  </Typography>
+                <CloseIcon style={{ color: "#fff" }} />
+              </IconButton>
+            </Grid>
 
-                  {/* Message */}
-                  <Typography id="confirm-decision-description" sx={{ mb: 4 }}>
-                    Are you sure you want to {decision === 1 ? "approve" : "reject"} this payment?
-                  </Typography>
+            {/* Contribution His  tory */}
+            <ScrollBar style={{ height: '70vh' }}>
+              {groupTrans.length === 0 ? (
+                <Typography variant="body1" align="center" sx={{ marginTop: 2, fontSize: 16, color: '#333' }}>
+                  No transactions yet
+                </Typography>
+              ) : (
+                groupTrans.map((o, i) => (
+                  <Card key={i} sx={{ backgroundColor: o.status === 1 ? "#bef4ce" : o.status === 0 ? "#f4deb2" : "#f4b2b2", padding: '10px', borderRadius: '10px', marginBottom: '10px' }}>
+                    <CardContent>
+                      <Grid container justifyContent="space-between">
+                        <Box>
+                          <Typography variant="body1" sx={{ fontWeight: "bold", color: "#000" }}>
+                            {o.first_name} {o.last_name}
+                            
+                          </Typography>
+                          <Typography variant="caption" sx={{ marginTop: 1 }}>
+                            {o.created_at.substring(0, 19)}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" color="textPrimary" sx={{ fontWeight: "bold", color: "#000" }}>
+                          ₦ {o.amount}
+                        </Typography>
+                      </Grid>
 
-                  {/* Action Buttons */}
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{ backgroundColor: "#4caf50", color: "#fff" ,'&:hover': { // Define the hover state here
-                          backgroundColor: "#d96b60",
-                        },}}
-                        onClick={handleConfirm}
-                      >
-                        Yes
-                      </Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{ backgroundColor: "red", color: "#fff",'&:hover': { // Define the hover state here
-                          backgroundColor: "#d96b60",
-                        }, }}
-                        onClick={handleCancel}
-                      >
-                        No
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Modal>
+                      <Typography variant="subtitle2" sx={{ marginTop: 1, fontWeight: 600, color: "#000" }}>Comment</Typography>
+                      <Typography variant="body2" sx={{ marginTop: 1, fontWeight: 900 }}>{o.comment}</Typography>
 
+                      {/* Receipt Image */}
+                      {o.receipt && (
+                        <CardMedia
+                          component="img"
+                          image={o.receipt}
+                          alt="Receipt"
+                          sx={{ height: 120, marginY: '10px', borderRadius: '10px' }}
+                          onClick={() => window.open(o.receipt)}
+                        />
+                      )}
+
+                      {/* Approve/Reject Buttons */}
+                      {o.status === 0 && groupData.host === auth.user_id && (
+                        <Grid container justifyContent="space-between" spacing={2} sx={{ marginTop: 2 }}>
+                          <Grid item xs={6}>
+                            <Button
+                              fullWidth
+                              variant="contained"
+                              sx={{
+                                backgroundColor: "#fff", color: "#000", borderRadius: '12px', '&:hover': { // Define the hover state here
+                                  backgroundColor: "#4fb26e",
+                                },
+                              }}
+                              onClick={() => {
+                                setDecision(1);
+                                setId(o.id);
+                                return handleApprovePress();
+                              }}
+                            >
+                              Approve
+                            </Button>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Button
+                              fullWidth
+                              variant="contained"
+                              sx={{
+                                backgroundColor: "red", color: "#fff", borderRadius: '12px', '&:hover': { // Define the hover state here
+                                  backgroundColor: "#d96b60",
+                                },
+                              }}
+                              onClick={() => {
+                                setDecision(2);
+                                setId(o.id);
+                                return handleApprovePress();
+                              }}
+                            >
+                              Reject
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+              {/* Spacing at the bottom */}
+              <Box sx={{ height: '200px' }} />
+            </ScrollBar>
+          </Box>
+        </Modal>
+
+        {/* payout */}
+        <Modal
+          open={paymodalVisible}
+          onClose={() => setPayModalVisibles(false)}
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
+        >
+          <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', maxWidth: "100vh", margin: '5vh auto', overflowY: 'auto', position: 'relative' }}>
+
+            <Box sx={styles.headerContainer}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#000" }}>Process Payout</Typography>
+              <IconButton onClick={() => setPayModalVisibles(false)}>
+                {/* sx={{ backgroundColor: 'red', color: '#fff' }} */}
+                <CloseIcon />
+              </IconButton>
             </Box>
-            
-            </Modal>
+
+            <Box sx={{ marginTop: 2 }}>
+              <Typography sx={styles.label} sx={{ fontWeight: "bold", color: "#000" }}>Amount</Typography>
+              <TextField
+                fullWidth
+                placeholder="Enter amount"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                sx={{
+                  marginBottom: 4,
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#d96b60', // Border color on focus
+                    },
+                    '& input::placeholder': {
+                      color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+                    },
+                    '&.Mui-focused input::placeholder': {
+                      color: '#4fb26e', // Placeholder color on focus
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(0, 0, 0, 0.54)', // Default label color
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#4fb26e', // Label color when focused
+                  }
+                }}
+              />
+            </Box>
+
+            <Box {...getRootProps()} sx={styles.dropzone}>
+              <input {...getInputProps()} />
+              <Typography>{isReceiptSelected}</Typography>
+              {selectedImage && (
+                <img src={selectedImage} alt="Receipt" style={styles.image} />
+              )}
+            </Box>
+
+            <Box sx={{ marginTop: 2 }}>
+              <Typography sx={styles.label} >Processing payout to:</Typography>
+              <Typography>
+                {
+                  userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
+                    userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].first_name :
+                    userDummy[0].first_name
+                }{" "}{
+                  userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
+                    userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].last_name :
+                    userDummy[0].last_name
+                }
+              </Typography>
+            </Box>
+
+            <Button
+              onClick={handlePayout}
+              fullWidth
+              variant="contained"
+              sx={{
+                ...styles.submitButton, '&:hover': { // Define the hover state here
+                  backgroundColor: "#d96b60",
+                },
+              }}
+            >
+              {isLoading3 ? <CircularProgress size={24} /> : "Submit"}
+            </Button>
+          </Box>
+        </Modal>
+
+        {/* invite */}
+        <Modal
+          open={inmodalVisible} // Modal should appear when inmodalVisible is true
+          onClose={() => setInModalVisibles(null)}
+        >
+          <Box sx={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', maxHeight: '90vh', maxWidth: "100vh", margin: '5vh auto', overflowY: 'auto', position: 'relative' }}>
+            {/* Header with Close Button */}
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Typography variant="h6" component="h2" style={styles.activeTabText}>
+                Invite a Member
+              </Typography>
+              <IconButton
+                sx={{ backgroundColor: 'red', color: '#fff' }}
+                onClick={() => setInModalVisibles(null)}
+              >
+                <CloseIcon style={{ color: "#fff" }} />
+              </IconButton>
+            </Grid>
+
+            {/* Invite Form */}
+            <ScrollBar style={{ height: '70vh' }}>
+              <Typography variant="body1" sx={{ marginBottom: '15px', fontSize: '16px', fontWeight: 'bold' }}>
+                Phone Number
+              </Typography>
+
+              {/* Phone Number Input */}
+              <Box sx={{ width: '100%', height: '60px', display: 'flex', alignItems: 'center', backgroundColor: '#f7f7f7', borderRadius: '12px', paddingLeft: '15px' }}>
+                <TextField
+                  placeholder="Enter user phone number"
+                  type="tel"
+                  fullWidth
+                  variant="standard"
+                  onChange={(e) => setPhone(e.target.value)}
+                  InputProps={{
+                    disableUnderline: true,
+                    style: { height: '100%' },
+                  }}
+                />
+              </Box>
+
+              {/* Invite Button */}
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleInvite}
+                sx={{
+                  ...styles.submitButton, '&:hover': { // Define the hover state here
+                    backgroundColor: "#d96b60",
+                  },
+                }}
+              >
+                {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Invite'}
+              </Button>
+
+              {/* Spacing at the bottom */}
+              <Box sx={{ height: '200px' }} />
+            </ScrollBar>
+          </Box>
+        </Modal>
+
+
+        <Modal
+          open={isConfirmModalVisible}
+          onClose={() => setConfirmModalVisible(false)}
+          aria-labelledby="confirm-decision-modal"
+          aria-describedby="confirm-decision-description"
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: { xs: 300, md: 400 },
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              borderRadius: 2,
+              p: 4,
+            }}
+          >
+            {/* Title */}
+            <Typography id="confirm-decision-modal" variant="h6" sx={{ mb: 2 }}>
+              Confirm Decision
+            </Typography>
+
+            {/* Message */}
+            <Typography id="confirm-decision-description" sx={{ mb: 4 }}>
+              Are you sure you want to {decision === 1 ? "approve" : "reject"} this payment?
+            </Typography>
+
+            {/* Action Buttons */}
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: "#4caf50", color: "#fff", '&:hover': { // Define the hover state here
+                      backgroundColor: "#d96b60",
+                    },
+                  }}
+                  onClick={handleConfirm}
+                >
+                  Yes
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: "red", color: "#fff", '&:hover': { // Define the hover state here
+                      backgroundColor: "#d96b60",
+                    },
+                  }}
+                  onClick={handleCancel}
+                >
+                  No
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Modal>
+
+      </Box>
+
+    </Modal>
   );
 };
 
 export default GroupDetailsModal;
 const styles = {
-    modalContainer: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    modalContent: {
-      backgroundColor: "white",
-      padding: 4,
-      borderRadius: 2,
-      width: "80%",
-      maxWidth: 500,
-    },
-    headerContainer: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    label: {
-      fontWeight: "bold",
-      color:"#000"
-    },
-    textField: {
-      backgroundColor: "#f7f7f7",
-      borderRadius: 1,
-    },
-    dropzone: {
-      border: "2px dashed #ccc",
-      padding: 2,
-      marginTop: 2,
-      textAlign: "center",
-      cursor: "pointer",
-      borderRadius: 2,
-    },
-    image: {
-      width: "100%",
-      height: 150,
-      objectFit: "cover",
-      marginTop: 2,
-    },
-    submitButton: {
-      marginTop: 4,
-      backgroundColor:"#4fb26e"
-    },
-  };
+  modalContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 4,
+    borderRadius: 2,
+    width: "80%",
+    maxWidth: 500,
+  },
+  headerContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  label: {
+    fontWeight: "bold",
+    color: "#000"
+  },
+  textField: {
+    backgroundColor: "#f7f7f7",
+    borderRadius: 1,
+  },
+  dropzone: {
+    border: "2px dashed #ccc",
+    padding: 2,
+    marginTop: 2,
+    textAlign: "center",
+    cursor: "pointer",
+    borderRadius: 2,
+  },
+  image: {
+    width: "100%",
+    height: 150,
+    objectFit: "cover",
+    marginTop: 2,
+  },
+  submitButton: {
+    marginTop: 4,
+    backgroundColor: "#4fb26e"
+  },
+};
