@@ -65,9 +65,9 @@ const App = (props: ExtendedAppProps) => {
         <title>Adashe</title>
         <meta
           name='description'
-          content="Adeshe"
+          content="Adashe"
         />
-        <meta name='keywords' content='Adeshe' />
+        <meta name='keywords' content='Adashe' />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
 
