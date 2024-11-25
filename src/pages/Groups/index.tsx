@@ -7,117 +7,191 @@ import {
   Avatar,
   Paper,
   Grid,
-  Modal,
+  Modal, 
+  TextField, 
   Drawer,
+  Badge,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText, 
+  Button,
 } from '@mui/material';
-import { Menu as MenuIcon, Notifications as NotificationsIcon } from '@mui/icons-material'; 
-import { HTTPGetWithToken } from 'src/Services';
+ 
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SearchIcon from '@mui/icons-material/Search';
+import PersonIcon from '@mui/icons-material/Person';
+import Image from 'next/image';   
+import { HTTPGetWithToken, HTTPPostWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
 import GroupDetailsModal from 'src/@core/components/Modal';
 
 const PaymentRequest: React.FC = () => {
-  const [isActive, setIsActive] = useState(false);
-  const [isChecked, setChecked] = useState(false);
-  const [data, setData] = useState([]); 
-  const [group, setGroup] = useState([]); 
-  const [Country, setCountry] = useState("+234");
-  const [date, setDate] = useState("");
-  const [profileImg, setProfileImg] = useState<string | null>(null);  
-  const [groups, setGroups] = useState([]); 
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [amount, setAmount] = useState('');
+  const [isDrawerVisible, setDrawerVisible] = useState(false);
+  const [group, setGroup] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
 
-  const handleGroupPress = (groupId: number) => {
-    setSelectedGroupId(groupId);
-    setModalVisible(true);
-  };
+  const openDrawer = () => setDrawerVisible(true);
+  const closeDrawer = () => setDrawerVisible(false);
 
-  const handlePaymentRequest = () => {
-    console.log('Payment requested for amount:', amount);
-    setAmount('');
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const getGroup = async () => { 
-    const user = await localStorage.getItem("user");
-
-    if (user === null) {
-      // Handle navigation if user is null
-      return;  
+  const handleGroupPress = async (groupId) => {
+    alert('Sending Request...');
+    const user = await localStorage.getItem('user');
+    if (!user) {
+      alert('Please login first.');
+      return;
     }
-    
-    const parsedUser = JSON.parse(user); 
-    const userId = parsedUser.user.user_id; 
-    const token = parsedUser.user.token;
-    HTTPGetWithToken(`${BASEURL}/group/member/${userId}}`, token)
-      .then(data => { 
-        console.log(data)
-        if (data.code === 200) { 
-          const payload = data.payload.map((item: any) => {
-            if (item.start_date) { 
-              item.start_date = formatDate(item.start_date);
-              setDate(item.start_date);
-            }
-            return item;
-          });
-          setGroup(payload); 
-        } else {
-          console.error('Error fetching data:', data.message);
+    const parsedUser = JSON.parse(user);
+    const payload = {};
+    HTTPPostWithToken(
+      `${BASEURL}/group/member/request/${parsedUser.user_id}/${groupId}`,
+      payload,
+      parsedUser.token
+    )
+      .then((data) => {
+        alert(data.code === 200 ? data.message : data.errorMessage);
+      })
+      .catch(() => alert('An error occurred, please try again.'));
+  };
+
+  const getGroup = async (query = '') => {
+    setIsLoading(true);
+    const user = await localStorage.getItem('user');
+    if (!user) {
+      alert('Please login first.');
+      return;
+    }
+    const parsedUser = JSON.parse(user);
+    HTTPGetWithToken(
+      `${BASEURL}/group/member/all/${parsedUser.user_id}?page=${page}&query=${query}`,
+      parsedUser.token
+    )
+      .then((data) => {
+        if (data.code === 200) {
+          setGroup((prev) => [
+            ...prev,
+            ...data.payload.map((item) => ({
+              ...item,
+              start_date: item.start_date ? formatDate(item.start_date) : null,
+            })),
+          ]);
         }
       })
-      .catch(error => {
-        console.error('Error making HTTP request:', error);
-      });
+      .catch(() => alert('Error fetching groups.'))
+      .finally(() => setIsLoading(false));
   };
 
-  useEffect(() => {  
+  const handleLoadMore = () => {
+    setPage((prev) => prev + 1);
+    getGroup(searchQuery);
+  };
+
+  useEffect(() => {
     getGroup();
-  }, []);
+  }, [page]);
 
   return ( 
-    <Box sx={{ padding: 5, minHeight: '100vh' ,backgroundColor:"#fff"}}>
+    <Box sx={{ padding: 5 ,backgroundColor:"#fff"}}>
     
       <Grid container spacing={2} sx={{ paddingX: 2 }}>
         <Typography variant="h4" gutterBottom sx={{color:"#000",fontWeight:"bold"}}>
           Groups
         </Typography>
-
-        {group.map((payment: any) => (
-          <Grid item xs={12} key={payment.id}>
-            <Paper onClick={() => handleGroupPress(payment.id)} elevation={3} sx={{ display: 'flex', alignItems: 'center', padding: 2, borderRadius: 2 }}>
-              <Avatar sx={{ marginRight: 2 }} src="/path/to/group/icon.jpg" />
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="h6">{payment.group_name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {payment.start_date}
-                </Typography>
-              </Box>
-              <Typography variant="h6">₦{payment.group_value.toFixed(2)}</Typography>
-            </Paper>
-          </Grid>
-        ))}
       </Grid>
-
-      <Modal open={modalVisible} onClose={() => setModalVisible(false)}>
-        <Box>
-          {/* Modal content for group details */}
-          <GroupDetailsModal
-            isVisible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            groupId={selectedGroupId}
-          />
+      <Box display="flex" alignItems="center" p={2} bgcolor="primary.main" color="white">
+        <IconButton onClick={openDrawer} color="inherit">
+          <MenuIcon />
+        </IconButton>
+        <Box flexGrow={1}>
+          <Typography variant="h6">Payment Request</Typography>
         </Box>
-      </Modal>
+        <IconButton color="inherit">
+          <Badge badgeContent={0} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <IconButton color="inherit">
+          <PersonIcon />
+        </IconButton>
+      </Box>
+
+      {/* Drawer */}
+      <Drawer anchor="left" open={isDrawerVisible} onClose={closeDrawer}>
+        <Box p={2} width={250}>
+          <Typography variant="h6">Drawer Content</Typography>
+        </Box>
+      </Drawer>
+
+      {/* Search Input */}
+      <Box p={2}>
+        <TextField
+          placeholder="Search for group"
+          fullWidth
+          InputProps={{
+            endAdornment: <SearchIcon />,
+          }}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              setPage(1);
+              setGroup([]);
+              getGroup(e.target.value);
+            }
+          }}
+        />
+      </Box>
+
+      {/* Group List */}
+      <Box p={2}>
+        {isLoading && group.length === 0 ? (
+          <Box textAlign="center" mt={3}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <List>
+            {group.map((item) => (
+              <ListItem
+                key={item.id}
+                button
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handleGroupPress(item.id);
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <Image
+                      src="/user_icon.png" // Replace with your actual image path
+                      alt="Group Icon"
+                      width={40}
+                      height={40}
+                    />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={item.group_name}
+                  secondary={item.created_at.replace('T', ' ').replace('000Z', '')}
+                />
+                <Typography variant="body2">₦{item.amount} ({item.payment_interval})</Typography>
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </Box>
+
+      {/* Load More Button */}
+      {group.length > 0 && (
+        <Box textAlign="center" mt={2}>
+          <Button onClick={handleLoadMore} variant="contained">
+            Load More
+          </Button>
+        </Box>
+      )} 
     </Box>
   );
 };
