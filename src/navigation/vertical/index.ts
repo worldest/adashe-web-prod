@@ -41,6 +41,11 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountGroup,
       path: '/Groups'
     },
+    {
+      title: 'Profile',
+      icon: AccountOutline,
+      path: '/profile'
+    },
     // {
     //   sectionTitle: 'Pages'
     // },
