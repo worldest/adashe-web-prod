@@ -147,14 +147,15 @@ const PaymentRequest: React.FC = () => {
       <Box p={2}>
         {isLoading && group.length === 0 ? (
           <Box textAlign="center" mt={3}>
-            <CircularProgress />
+            <CircularProgress color='#4fb26e' />
           </Box>
         ) : (
           <List>
             {group.map((item) => (
               <ListItem
                 key={item.id}
-                button
+                button 
+                onClick={() => window.alert("Long press to accept invitation")}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   handleGroupPress(item.id);
