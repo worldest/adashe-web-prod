@@ -1,3 +1,4 @@
+//@ts-nocheck
 // ** React Imports
 import { useState, SyntheticEvent, Fragment, ReactNode, useEffect } from 'react'
 
