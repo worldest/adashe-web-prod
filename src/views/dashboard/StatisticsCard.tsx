@@ -211,7 +211,7 @@ const StatisticsCard = () => {
       title: 'Groups',
       color: 'primary',
       icon: <AccountGroup sx={{ fontSize: '1.75rem', color: '#000' }} />,
-      path: '/Group'
+      path: '/Groups'
     }
   ];
 

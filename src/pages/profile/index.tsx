@@ -197,6 +197,13 @@ const PaymentRequest: React.FC = () => {
                   textTransform: 'none',
                   padding: 2,
                 },
+                '& .Mui-selected': {
+                  color: '#4fb26e', // Active tab text color
+                  fontWeight: 'bold', // Optional: Make it bold for better visibility
+                },
+                '& .MuiTabs-indicator': {
+                  backgroundColor: '#4fb26e', // Indicator line color
+                },
               }}
             >
               <Tab label="Edit Profile" />
@@ -432,7 +439,8 @@ const EditProfile = () => {
         onClick={handleContinue}
         variant="contained"
         fullWidth
-        sx={{ mt: 2,backgroundColor:"#4fb26e"}}
+        sx={{ mt: 2, }}
+        style={{backgroundColor:"#4fb26e"}}
         disabled={isLoading}
       >
         {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Save Changes'}
@@ -528,8 +536,9 @@ const ChangePassword = () => {
       <Button
         onClick={handleContinue}
         variant="contained"
-        fullWidth
-        sx={{ mt: 2,backgroundColor:"#4fb26e"}}
+        fullWidth 
+        sx={{ mt: 2, }}
+        style={{backgroundColor:"#4fb26e"}}
         disabled={isLoading}
       >
         {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Proceed'}

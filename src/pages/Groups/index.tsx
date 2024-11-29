@@ -1,4 +1,5 @@
 //@ts-nocheck
+"use client";
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -10,8 +11,7 @@ import {
   Modal, 
   TextField, 
   Drawer,
-  Badge,
-  CircularProgress,
+  Badge, 
   List,
   ListItem,
   ListItemAvatar,
@@ -26,8 +26,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Image from 'next/image';   
 import { HTTPGetWithToken, HTTPPostWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
-import GroupDetailsModal from 'src/@core/components/Modal';
-
+import GroupDetailsModal from 'src/@core/components/Modal'; 
 const PaymentRequest: React.FC = () => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
   const [group, setGroup] = useState([]);
@@ -147,7 +146,7 @@ const PaymentRequest: React.FC = () => {
       <Box p={2}>
         {isLoading && group.length === 0 ? (
           <Box textAlign="center" mt={3}>
-            <CircularProgress color='#4fb26e' />
+             <span style={{ color: '#4fb26e', fontSize: '16px' }}>Loading.....</span>
           </Box>
         ) : (
           <List>
@@ -185,7 +184,7 @@ const PaymentRequest: React.FC = () => {
       {/* Load More Button */}
       {group.length > 0 && (
         <Box textAlign="center" mt={2}>
-          <Button sx={{backgroundColor:"#4fb26e"}} onClick={handleLoadMore} variant="contained">
+          <Button style={{backgroundColor:"#4fb26e"}} onClick={handleLoadMore} variant="contained">
             Load More
           </Button>
         </Box>

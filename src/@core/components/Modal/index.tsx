@@ -1151,43 +1151,51 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         {/* Bottom Fixed Tabs */}
 
         {groupData.host === auth.user_id && (
-          <Grid
+            <Grid
             container
             justifyContent="space-around"
             sx={{
-              position: 'sticky', // Keep it at the bottom of the modal, not the page
+              position: 'sticky', // Keeps it at the bottom of the parent
+              bottom: 0,
               backgroundColor: '#fff',
               borderTop: '1px solid #ddd',
-              boxShadow: 3,
               py: 2,
             }}
           >
             <Grid item xs={3} textAlign="center">
-              <IconButton onClick={() => { setModalVisibles(true) }}>
-                <ManageAccountsIcon sx={{ color: "#4fb26e" }} />
+              <IconButton onClick={() => setModalVisibles(true)}>
+                <ManageAccountsIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">Manage Group</Typography>
+              <Typography sx={{ color: '#000' }} variant="body2">
+                Manage Group
+              </Typography>
             </Grid>
-
+      
             <Grid item xs={3} textAlign="center">
-              <IconButton onClick={() => { setHisModalVisibles(true) }}>
-                <HistoryIcon sx={{ color: "#4fb26e" }} />
+              <IconButton onClick={() => setHisModalVisibles(true)}>
+                <HistoryIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">Contribution History</Typography>
+              <Typography sx={{ color: '#000' }} variant="body2">
+                Contribution History
+              </Typography>
             </Grid>
-
+      
             <Grid item xs={3} textAlign="center">
-              <IconButton onClick={() => { setPayModalVisibles(true) }}>
-                <AttachMoneyIcon sx={{ color: "#4fb26e" }} />
+              <IconButton onClick={() => setPayModalVisibles(true)}>
+                <AttachMoneyIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">Process Payout</Typography>
+              <Typography sx={{ color: '#000' }} variant="body2">
+                Process Payout
+              </Typography>
             </Grid>
-
+      
             <Grid item xs={3} textAlign="center">
-              <IconButton onClick={() => { setInModalVisibles(true) }}>
-                <PersonAddIcon sx={{ color: "#4fb26e" }} />
+              <IconButton onClick={() => setInModalVisibles(true)}>
+                <PersonAddIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">Invite</Typography>
+              <Typography sx={{ color: '#000' }} variant="body2">
+                Invite
+              </Typography>
             </Grid>
           </Grid>
         )}
