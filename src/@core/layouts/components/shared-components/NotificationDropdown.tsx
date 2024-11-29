@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment, ReactNode } from 'react'
+import { useState, SyntheticEvent, Fragment, ReactNode, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -12,12 +12,15 @@ import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiAvatar, { AvatarProps } from '@mui/material/Avatar'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-
+import { useRouter } from 'next/router'; 
+import Image from 'next/image';
 // ** Icons Imports
 import BellOutline from 'mdi-material-ui/BellOutline'
 
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
+import { BASEURL } from 'src/Constant/Link'
+import { HTTPDeleteWithToken, HTTPGetWithToken, HTTPPatchWithToken, HTTPPostWithToken } from 'src/Services'
 
 // ** Styled Menu component
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
@@ -104,6 +107,155 @@ const NotificationDropdown = () => {
     }
   }
 
+  const handleAcceptInvitation = async (paymentId) => {
+    const user = localStorage.getItem("user");
+    if (user === null) {
+      router.push('/pages/login');
+      return;
+    }
+
+    const parsedUser = JSON.parse(user); // Now it's parsed properly
+
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token;
+ 
+    try {
+      const data = await  HTTPPatchWithToken(`${BASEURL}/group/accept/${paymentId}/${userId}`, {}, token)
+      console.log("Grop", data)
+      if (data.code === 200) {
+        window.alert("Invitation accepted. Notification sent to user");
+        getGroup();
+      } else {
+        window.alert(data.errorMessage);
+      }
+    } catch (error) {
+      window.alert("An error occurred. Please retry.");
+    } 
+  };
+
+  const handleDeclineInvitation = async (paymentId) => {
+    const user = localStorage.getItem("user");
+    if (user === null) {
+      router.push('/pages/login');
+      return;
+    }
+
+    const parsedUser = JSON.parse(user);
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token;
+
+    try { 
+      const data = await  HTTPPatchWithToken(`${BASEURL}/group/decline/${paymentId}/${userId}`, {}, token)
+      if (data.code === 200) {
+        window.alert("Invitation rejected");
+        getGroup();
+      } else {
+        window.alert(data.errorMessage);
+      }
+    } catch (error) {
+      window.alert("An error occurred. Please retry.");
+    } 
+  };
+
+  const router = useRouter();
+  const [group, setGroup] = useState([]);
+  const [Country, setCountry] = useState("+234");
+  const [notificationsPending, setNotificationPending] = useState([])
+  const [date, setDate] = useState("");
+  const [profileimg, setprofileimg] = useState(null);
+  const [groups, setGroups] = useState([]); // Initialize your group data
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false); 
+  const handleGroupPress = (groupId) => {
+    setSelectedGroupId(groupId);
+    setModalVisible(true);
+  };
+
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  // Sample payment data
+  const [isDrawerVisible, setDrawerVisible] = useState(false);
+
+  const openDrawer = () => {
+    setDrawerVisible(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerVisible(false);
+  };
+  const [amount, setAmount] = useState(false);
+
+  const handlePaymentRequest = () => {
+    // Implement logic for handling payment request
+    console.log('Payment requested for amount:', amount);
+    // Reset amount after submitting the request
+    // setAmount('');
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-based month
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getGroup = () => { 
+    const user = localStorage.getItem("user"); 
+  if (user === null) {
+    router.push('/pages/login');
+    return;
+  }
+
+  const parsedUser = JSON.parse(user); // Now it's parsed properly
+   
+  const userId = parsedUser.user.user_id; 
+  const token = parsedUser.user.token;   
+    HTTPGetWithToken(`${BASEURL}/group/member/pending/${userId}`, token)
+      .then(data => {
+        console.log(data)
+        if (data.code === 200) {
+          const payload = data.payload.map(item => {
+            if (item.start_date) {
+              item.start_date = formatDate(item.start_date);
+              setDate(item.start_date)
+            }
+            return item;
+          });
+
+
+          setGroup(payload);
+
+        } else {
+          // Handle error cases
+          console.error('Error fetching KYC data:', data.message); 
+        }
+      })
+      .catch(error => {
+        // Handle request errors
+        console.error('Error making HTTP request:', error);
+      });
+
+    
+    HTTPGetWithToken(`${BASEURL}/group/member/request/${userId}`,token)
+      .then(data => {
+        if (data.code == 200) {
+          setNotificationPending(data.payload)
+          console.log("DATA", data.payload)
+        } else {
+
+        }
+      })
+      .catch(error => {
+        
+      })
+  };
+
+
+  useEffect(() => { 
+    getGroup()
+  }, []);
+
   return (
     <Fragment>
       <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
@@ -119,96 +271,229 @@ const NotificationDropdown = () => {
         <MenuItem disableRipple>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Typography sx={{ fontWeight: 600 }}>Notifications</Typography>
-            <Chip
+            {/* <Chip
               size='small'
               label='8 New'
               color='primary'
               sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
-            />
+            /> */}
           </Box>
         </MenuItem>
         <ScrollWrapper>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Avatar alt='Flora' src='/images/avatars/4.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>Congratulation Flora! 🎉</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>Won the monthly best seller badge</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                Today
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Avatar sx={{ color: 'common.white', backgroundColor: 'primary.main' }}>VU</Avatar>
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>New user registered.</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>5 hours ago</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                Yesterday
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Avatar alt='message' src='/images/avatars/5.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>New message received 👋🏻</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>You have 10 unread messages</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                11 Aug
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <img width={38} height={38} alt='paypal' src='/images/misc/paypal.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>Paypal</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>Received Payment</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                25 May
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Avatar alt='order' src='/images/avatars/3.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>Revised Order 📦</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>New order revised from john</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                19 Mar
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <img width={38} height={38} alt='chart' src='/images/misc/chart.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>Finance report has been generated</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>25 hrs ago</MenuItemSubtitle>
-              </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                27 Dec
-              </Typography>
-            </Box>
-          </MenuItem>
+        <div style={{ padding: '15px' }}>  
+            <p>Pending group invites</p>
+            {group.map((payment) => (
+              <div
+                key={payment.id}
+                style={{
+                  backgroundColor: "#f0f0f0", 
+                  borderRadius: "10px",
+                  boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
+                  width: "98%",
+                  margin: "auto",
+                  padding: "15px",
+                  marginBottom: "20px",
+                }}
+              > 
+              <div
+                onClick={() => handleGroupPress(payment.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center", 
+                  background:"#fff", 
+                  borderRadius: "10px",
+                }}
+              >
+                <div style={{marginLeft:8}}>
+                  <Image
+                    src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                    alt='Logo'
+                    width={30}
+                    height={30}
+                    style={{ objectFit: 'contain' }}
+                  />
+                </div>
+                  <div style={{marginLeft:10}}>
+                    <h3 style={{fontSize:16,color:"#000"}}>{payment.group_name}</h3>
+                    <p style={{fontSize:12}}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
+                  </div>
+                  <p style={{fontSize:14,color:"#000",fontWeight:"bold",marginLeft:10}}>₦{payment.amount} ({payment.payment_interval})</p>
+                </div>
+                <p style={{ color: "red", textAlign: "center" }}>
+                  Invited by: {payment.first_name} {payment.last_name}
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "10px",
+                  }}
+                >
+                  <button
+                    style={{
+                      backgroundColor: "#00800020",
+                      width: "120px",
+                      padding: "10px",
+                      borderRadius: "10px",
+                    }}
+                    onClick={() => window.alert("Long press to accept invitation")}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      handleAcceptInvitation(payment.id);
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: "#FF000020",
+                      width: "120px",
+                      padding: "10px",
+                      borderRadius: "10px",
+                    }}
+                    onClick={() => window.alert("Long press to reject invitation")}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      handleDeclineInvitation(payment.id);
+                    }}
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
+            ))}
+            {notificationsPending.map((payment) => (
+              <div
+                key={payment.id}
+                style={{
+                  backgroundColor: "#f0f0f0", 
+                  borderRadius: "10px",
+                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                  width: "98%",
+                  margin: "auto",
+                  padding: "10px", 
+                  marginBottom: "20px",
+                }}
+              >
+                <div
+                  onClick={() => handleGroupPress(payment.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center", 
+                    background:"#fff", 
+                    borderRadius: "10px",
+                  }}
+                >
+                  <div style={{marginLeft:8}}>
+                  <Image
+                    src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                    alt='Logo'
+                    width={30}
+                    height={30}
+                    style={{ objectFit: 'contain' }}
+                  />
+                  </div>
+                  <div style={{marginLeft:10}}>
+                    <h3 style={{fontSize:16,color:"#000"}}>{`${payment.first_name} ${payment.last_name}`}</h3>
+                    <p style={{fontSize:12,}}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
+                  </div>
+                </div>
+                <p style={{ color: "red", textAlign: "center" }}>
+                  Sends a request to join "{payment.group_name}"
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "10px",
+                  }}
+                >
+                  <button
+                    style={{
+                      backgroundColor: "#00800020",
+                      width: "120px",
+                      padding: "10px",
+                      borderRadius: "10px",
+                    }}
+                    onClick={() => window.alert("Long press to accept invitation")}
+                    onContextMenu={async (e) => {
+                      e.preventDefault();
+                      const user = localStorage.getItem("user");
+                      if (user === null) {
+                        router.push('/pages/login');
+                        return;
+                      }
+                  
+                      const parsedUser = JSON.parse(user); // Now it's parsed properly
+                  
+                      const userId = parsedUser.user.user_id;
+                      const token = parsedUser.user.token;
+                   
+                      var body = {
+                        userid:userId,
+                        invited_userid: payment.user_phone,
+                        group_id: payment.group_id
+                      }
+                      try {
+                        const data = await HTTPPostWithToken(`${BASEURL}/group/invite`,body,token);
+                        console.log("Grop", data)
+                        if (data.code === 200) {
+                          window.alert("Invitation accepted. Notification sent to user");
+                          getGroup();
+                        } else {
+                          window.alert(data.errorMessage);
+                        }
+                      } catch (error) {
+                        window.alert("An error occurred. Please retry.");
+                      }
+ 
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: "#FF000020",
+                      width: "120px",
+                      padding: "10px",
+                      borderRadius: "10px",
+                    }}
+                    onClick={() => window.alert("Long press to reject invitation")}
+                    onContextMenu={async (e) => {
+                      e.preventDefault();
+                      const user = localStorage.getItem("user");
+                      if (user === null) {
+                        router.push('/pages/login');
+                        return;
+                      }
+
+                      const parsedUser = JSON.parse(user);
+                      const userId = parsedUser.user.user_id;
+                      const token = parsedUser.user.token;
+
+                      try { 
+                        const data = await  HTTPDeleteWithToken(`${BASEURL}/group/member/request/${userId}/${payment.id}`, {},token)
+                        if (data.code === 200) {
+                          window.alert("Invitation rejected");
+                          getGroup();
+                        } else {
+                          window.alert(data.errorMessage);
+                        }
+                      } catch (error) {
+                        window.alert("An error occurred. Please retry.");
+                      }
+                    }}
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div style={{ height: "200px" }}></div>
+          </div>
         </ScrollWrapper>
-        <MenuItem
-          disableRipple
-          sx={{ py: 3.5, borderBottom: 0, borderTop: theme => `1px solid ${theme.palette.divider}` }}
-        >
-          <Button fullWidth variant='contained' onClick={handleDropdownClose}>
-            Read All Notifications
-          </Button>
-        </MenuItem>
+           
       </Menu>
     </Fragment>
   )

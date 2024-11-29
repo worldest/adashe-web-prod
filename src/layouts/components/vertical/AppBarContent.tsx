@@ -71,9 +71,9 @@ const AppBarContent = (props: Props) => {
               src='https://img.shields.io/github/stars/themeselection/materio-mui-react-nextjs-admin-template-free?style=social'
             />
           </Box>
-        )} */}
+        )}  */}
         {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
-        {/* <NotificationDropdown /> */}
+        <NotificationDropdown />
         <UserDropdown />
       </Box>
     </Box>
