@@ -347,9 +347,9 @@ const RegisterPage = () => {
                   </InputAdornment>
                 } 
               />
-               <Typography variant='body2' color='error'>
+               {/* <Typography variant='body2' color='error'>
                 Password must be strong and more than 6 characters.
-              </Typography>
+              </Typography> */}
             </FormControl>
             <FormControlLabel
               control={<Checkbox checked={checkboxChecked} onChange={handleCheckboxChange}  sx={{ 
