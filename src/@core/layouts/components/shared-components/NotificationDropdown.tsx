@@ -16,6 +16,7 @@ import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useRouter } from 'next/router'; 
 import Image from 'next/image';
 // ** Icons Imports
+import toast, { Toaster } from 'react-hot-toast';
 import BellOutline from 'mdi-material-ui/BellOutline'
 
 // ** Third Party Components
@@ -124,13 +125,13 @@ const NotificationDropdown = () => {
       const data = await  HTTPPatchWithToken(`${BASEURL}/group/accept/${paymentId}/${userId}`, {}, token)
       console.log("Grop", data)
       if (data.code === 200) {
-        window.alert("Invitation accepted. Notification sent to user");
+        toast("Invitation accepted. Notification sent to user");
         getGroup();
       } else {
-        window.alert(data.errorMessage);
+        toast(data.errorMessage);
       }
     } catch (error) {
-      window.alert("An error occurred. Please retry.");
+      toast("An error occurred. Please retry.");
     } 
   };
 
@@ -148,13 +149,13 @@ const NotificationDropdown = () => {
     try { 
       const data = await  HTTPPatchWithToken(`${BASEURL}/group/decline/${paymentId}/${userId}`, {}, token)
       if (data.code === 200) {
-        window.alert("Invitation rejected");
+        toast("Invitation rejected");
         getGroup();
       } else {
-        window.alert(data.errorMessage);
+        toast(data.errorMessage);
       }
     } catch (error) {
-      window.alert("An error occurred. Please retry.");
+      toast("An error occurred. Please retry.");
     } 
   };
 
@@ -207,7 +208,6 @@ const NotificationDropdown = () => {
     router.push('/pages/login');
     return;
   }
-
   const parsedUser = JSON.parse(user); // Now it's parsed properly
    
   const userId = parsedUser.user.user_id; 
@@ -259,6 +259,7 @@ const NotificationDropdown = () => {
 
   return (
     <Fragment>
+      <Toaster />
       <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
         <BellOutline />
       </IconButton>
@@ -337,7 +338,7 @@ const NotificationDropdown = () => {
                       padding: "10px",
                       borderRadius: "10px",
                     }}
-                    onClick={() => window.alert("Long press to accept invitation")}
+                    onClick={() => toast("Long press to accept invitation")}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       handleAcceptInvitation(payment.id);
@@ -352,7 +353,7 @@ const NotificationDropdown = () => {
                       padding: "10px",
                       borderRadius: "10px",
                     }}
-                    onClick={() => window.alert("Long press to reject invitation")}
+                    onClick={() => toast("Long press to reject invitation")}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       handleDeclineInvitation(payment.id);
@@ -416,7 +417,7 @@ const NotificationDropdown = () => {
                       padding: "10px",
                       borderRadius: "10px",
                     }}
-                    onClick={() => window.alert("Long press to accept invitation")}
+                    onClick={() => toast("Long press to accept invitation")}
                     onContextMenu={async (e) => {
                       e.preventDefault();
                       const user = localStorage.getItem("user");
@@ -439,13 +440,13 @@ const NotificationDropdown = () => {
                         const data = await HTTPPostWithToken(`${BASEURL}/group/invite`,body,token);
                         console.log("Grop", data)
                         if (data.code === 200) {
-                          window.alert("Invitation accepted. Notification sent to user");
+                          toast("Invitation accepted. Notification sent to user");
                           getGroup();
                         } else {
-                          window.alert(data.errorMessage);
+                          toast(data.errorMessage);
                         }
                       } catch (error) {
-                        window.alert("An error occurred. Please retry.");
+                        toast("An error occurred. Please retry.");
                       }
  
                     }}
@@ -459,7 +460,7 @@ const NotificationDropdown = () => {
                       padding: "10px",
                       borderRadius: "10px",
                     }}
-                    onClick={() => window.alert("Long press to reject invitation")}
+                    onClick={() => toast("Long press to reject invitation")}
                     onContextMenu={async (e) => {
                       e.preventDefault();
                       const user = localStorage.getItem("user");
@@ -475,13 +476,13 @@ const NotificationDropdown = () => {
                       try { 
                         const data = await  HTTPDeleteWithToken(`${BASEURL}/group/member/request/${userId}/${payment.id}`, {},token)
                         if (data.code === 200) {
-                          window.alert("Invitation rejected");
+                          toast("Invitation rejected");
                           getGroup();
                         } else {
-                          window.alert(data.errorMessage);
+                          toast(data.errorMessage);
                         }
                       } catch (error) {
-                        window.alert("An error occurred. Please retry.");
+                        toast("An error occurred. Please retry.");
                       }
                     }}
                   >

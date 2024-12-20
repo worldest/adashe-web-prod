@@ -21,7 +21,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
+import toast, { Toaster } from 'react-hot-toast';
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
 import Github from 'mdi-material-ui/Github'
@@ -102,17 +102,17 @@ const RegisterPage = () => {
   const handleAcc = () => {
     const { email, password, firstname, lastName, phone } = values;
     if (!checkboxChecked) {
-      alert("Please check the box to agree to privacy policy & terms.");
+      toast("Please check the box to agree to privacy policy & terms.");
       return;
     }
     // Basic validation checks
     if (!email || !password || !firstname || !lastName || !phone) {
-      alert('Please fill in all required fields.');
+      toast('Please fill in all required fields.');
       return;
     }
 
     if (!validateEmail(email)) {
-      alert('Please enter a valid email address.');
+      toast('Please enter a valid email address.');
       return;
     }
 
@@ -133,14 +133,14 @@ const RegisterPage = () => {
         if (data.code === 200) {
           localStorage.setItem('user', JSON.stringify(data));
           router.push('/pages/login');
-          alert(data.message);
+          toast(data.message);
         } else {
-          alert(data.message);
+          toast(data.message);
         }
       })
       .catch(error => {
         console.error('Error during login:', error);
-        alert('An error occurred. Please try again.');
+        toast('An error occurred. Please try again.');
       });
   };
 
@@ -154,6 +154,7 @@ const RegisterPage = () => {
 
   return (
     <Box className='content-center' style={{backgroundColor:"eaf9ef"}}>
+      <Toaster />
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

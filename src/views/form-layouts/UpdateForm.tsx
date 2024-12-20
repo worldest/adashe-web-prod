@@ -19,7 +19,7 @@
  import OutlinedInput from '@mui/material/OutlinedInput'
  import InputAdornment from '@mui/material/InputAdornment'
  import Select, { SelectChangeEvent } from '@mui/material/Select'
- 
+import toast, { Toaster } from 'react-hot-toast';
  // ** Third Party Imports
  import DatePicker from 'react-datepicker'
  
@@ -72,10 +72,10 @@
    .then(data => {
      console.log(data)
      if(data.code === 200){
-       alert("Prediction uploaded sucessfully")   
+       toast("Prediction uploaded sucessfully")   
        router.push('/')
      }else{
-       alert("Try again")
+       toast("Try again")
      }
    }) 
   }
@@ -108,6 +108,7 @@
  
    return (
      <Card>
+      <Toaster />
        <CardHeader title='Add Prediction' titleTypographyProps={{ variant: 'h6' }} />
        <Divider sx={{ margin: 0 }} />
        <form onSubmit={e => e.preventDefault()}>

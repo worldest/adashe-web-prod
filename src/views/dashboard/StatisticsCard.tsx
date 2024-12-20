@@ -218,7 +218,7 @@ const StatisticsCard = () => {
   // Render Stats Section
   const renderStats = () => {
     return salesData.map((item, index) => (
-      <Grid item xs={12} sm={6} key={index}>
+      <Grid item xs={6} sm={6} key={index}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
             onClick={() => router.push(item.path)}
@@ -265,7 +265,7 @@ const StatisticsCard = () => {
 
         >
           {/* Left-aligned Header */}
-          <Typography variant="h6" sx={{ color: '#000' }} fontWeight="bold">
+          <Typography variant="p" sx={{ color: '#000' }} fontWeight="bold">
             {stat.title}
           </Typography>
 

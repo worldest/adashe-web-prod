@@ -188,7 +188,7 @@ const getUsers = () =>{
                         HTTPPatchNoToken(`${BASEURL}/set/updateDataObject`,body)
                         .then(res => {
                           if(res.code == 200){
-                            alert(JSON.stringify(res))
+                            // alert(JSON.stringify(res))
                           }
                         })
                       }}  style={{backgroundColor:"#ef0222",color:"#fff",fontSize:12,fontWeight:"bold",padding:15,border:0,borderRadius:4,}}>Delete</button>

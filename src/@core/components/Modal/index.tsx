@@ -60,6 +60,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { useDropzone } from "react-dropzone";
 import Message from '../Message';
 import MessageModal from '../Message';
+import toast, { Toaster } from 'react-hot-toast';
 interface GroupDetailsModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -170,7 +171,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       // Show modal for missing phone number
       setModalVisible(true);
       setModalType('warning');
-      alert('Please fill the required fields');
+      toast('Please fill the required fields');
       setIsLoading2('Try Again');
 
 
@@ -197,7 +198,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               // Success case
               setModalVisible(true);
               setModalType('success');
-              alert(data.message);
+              toast(data.message);
 
               setTimeout(() => {
                 setInModalVisibles(false)
@@ -290,7 +291,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         if (data.code === 200) {
           setModalVisible(true);
           setModalType('success');
-          alert(data.message);
+          toast(data.message);
           setTimeout(() => {
             setPayModalVisibles(false)
           }, 3000);
@@ -300,14 +301,14 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         } else {
           setModalVisible(true);
           setModalType('warning');
-          alert(data.errormessage);
+          toast(data.errormessage);
           setIsLoading('Try again');
         }
       })
       .catch(error => {
         setModalVisible(true);
         setModalType('warning');
-        alert("please retry");
+        toast("please retry");
         setIsLoading('Try again');
         onClose()
       })
@@ -430,7 +431,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
             if (data.code === 200) {
               setModalVisible(true);
               setModalType('success');
-              alert(data.message);
+              toast(data.message);
               setIsLoading('Proceed');
               fetchGroupData();
               fetchGroupTrans();
@@ -438,14 +439,14 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
             } else {
               setModalVisible(true);
               setModalType('warning');
-              alert(data.errormessage);
+              toast(data.errormessage);
               setIsLoading('Try again');
             }
           })
           .catch(error => {
             setModalVisible(true);
             setModalType('warning');
-            alert("please retry");
+            toast("please retry");
             setIsLoading('Try again');
             onClose()
           })
@@ -483,14 +484,14 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         if (data.code === 200) {
           setModalVisible(true);
           setModalType('success');
-          alert(data.message);
+          toast(data.message);
           setIsLoading('Proceed');
           fetchGroupData()
           fetchGroupTrans()
         } else {
           setModalVisible(true);
           setModalType('warning');
-          alert(data.errormessage);
+          toast(data.errormessage);
           setIsLoading('Try again');
         }
       })
@@ -498,7 +499,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         setConfirmModalVisible(false);
         setModalVisible(true);
         setModalType('warning');
-        alert("please retry");
+        toast("please retry");
         setIsLoading('Try again');
         onClose()
       })
@@ -755,11 +756,12 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           overflow: 'auto'
         }}
       >
+        <Toaster />
         {/* Header Row */}
         <Grid container justifyContent="space-between">
           {/* Group Name and Description */}
           <Grid item xs={10}>
-            <Typography variant="h6" sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name} ({groupData.group_status})</Typography>
+            <Typography variant="h6" sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name}</Typography>
             <Typography variant="subtitle1" sx={{ color: '#000' }}>{groupData.group_desc}</Typography>
           </Grid>
 
@@ -797,8 +799,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography variant="body1" sx={{ color: '#000' }}>Total Contribution</Typography>
-                <Typography variant="h6" sx={{ color: '#000' }}>₦ {groupData.group_value}</Typography>
+                <Typography variant="body2" sx={{ color: '#000' }}>Total Contribution</Typography>
+                <Typography variant="p" sx={{ color: '#000' }}>₦ {parseFloat(groupData.group_value).toLocaleString("en")}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -809,8 +811,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography variant="body1" sx={{ color: '#000' }}>Total Payout</Typography>
-                <Typography variant="h6" sx={{ color: '#000' }}>₦ {totalPayout}</Typography>
+                <Typography variant="body2" sx={{ color: '#000' }}>Total Payout</Typography>
+                <Typography variant="p" sx={{ color: '#000' }}>₦ {parseFloat(totalPayout).toLocaleString("en")}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -823,8 +825,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography variant="body1" sx={{ color: '#000' }}>Payment Interval</Typography>
-                <Typography variant="h6" sx={{ color: '#000' }}>{groupData.payment_interval}</Typography>
+                <Typography variant="body2" sx={{ color: '#000' }}>Payment Interval</Typography>
+                <Typography variant="p" sx={{ color: '#000' }}>{groupData.payment_interval}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -835,8 +837,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography variant="body1" sx={{ color: '#000' }}>Amount to Pay</Typography>
-                <Typography variant="h6" sx={{ color: '#000' }}>₦ {groupData.amount}</Typography>
+                <Typography variant="body2" sx={{ color: '#000' }}>Amount to Pay</Typography>
+                <Typography variant="p" sx={{ color: '#000' }}>₦ {parseFloat(groupData.amount).toLocaleString("en")}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -849,8 +851,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography sx={{ color: '#000' }} variant="body1">Next Payment</Typography>
-                <Typography sx={{ color: '#000' }} variant="h6">{groupData.next_payment ? groupData.next_payment.replace("T", " ").replace(".000Z", "") : "..."}</Typography>
+                <Typography sx={{ color: '#000' }} variant="body2">Next Payment</Typography>
+                <Typography sx={{ color: '#000' }} variant="p">{groupData.next_payment ? groupData.next_payment.replace("T", " ").replace(".000Z", "") : "..."}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -861,8 +863,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               boxShadow: 0
             }}>
               <CardContent>
-                <Typography sx={{ color: '#000' }} variant="body1">Next Payout Collector</Typography>
-                <Typography sx={{ color: '#000' }} variant="h6"> {
+                <Typography sx={{ color: '#000' }} variant="body2">Next Payout Collector</Typography>
+                <Typography sx={{ color: '#000' }} variant="p"> {
                   userDummy.filter(ex => parseInt(ex.payout_status) > 0).length > 0 ?
                     userDummy.filter(ex => parseInt(ex.payout_status) == 1)[0].first_name :
                     userDummy[0].first_name
@@ -1166,7 +1168,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <IconButton onClick={() => setModalVisibles(true)}>
                 <ManageAccountsIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">
+              <Typography sx={{ color: '#000', fontSize: 12, fontWeight: "bold" }} variant="body2">
                 Manage Group
               </Typography>
             </Grid>
@@ -1175,7 +1177,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <IconButton onClick={() => setHisModalVisibles(true)}>
                 <HistoryIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">
+              <Typography sx={{ color: '#000', fontSize: 12, fontWeight: "bold" }} variant="body2">
                 Contribution History
               </Typography>
             </Grid>
@@ -1184,7 +1186,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <IconButton onClick={() => setPayModalVisibles(true)}>
                 <AttachMoneyIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">
+              <Typography sx={{ color: '#000', fontSize: 12, fontWeight: "bold" }} variant="body2">
                 Process Payout
               </Typography>
             </Grid>
@@ -1193,7 +1195,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
               <IconButton onClick={() => setInModalVisibles(true)}>
                 <PersonAddIcon sx={{ color: '#4fb26e' }} />
               </IconButton>
-              <Typography sx={{ color: '#000' }} variant="body2">
+              <Typography sx={{ color: '#000', fontSize: 12, fontWeight: "bold" }} variant="body2">
                 Invite
               </Typography>
             </Grid>
@@ -1488,7 +1490,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                             setIsLoading3(false);
                             setModalVisible(true);
                             setModalType('warning');
-                            alert(data.errorMessage);
+                            toast(data.errorMessage);
                           }
                         })
                         .catch(() => {

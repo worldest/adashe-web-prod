@@ -8,25 +8,27 @@ import {
   Avatar,
   Paper,
   Grid,
-  Modal, 
-  TextField, 
+  Modal,
+  TextField,
   Drawer,
-  Badge, 
+  Badge,
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText, 
+  ListItemText,
   Button,
 } from '@mui/material';
- 
+
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
-import Image from 'next/image';   
+import Image from 'next/image';
 import { HTTPGetWithToken, HTTPPostWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
-import GroupDetailsModal from 'src/@core/components/Modal'; 
+import GroupDetailsModal from 'src/@core/components/Modal';
+import toast, { Toaster } from 'react-hot-toast';
+
 const PaymentRequest: React.FC = () => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
   const [group, setGroup] = useState([]);
@@ -47,17 +49,17 @@ const PaymentRequest: React.FC = () => {
     return `${year}-${month}-${day}`;
   };
   const handleGroupPress = async (groupId) => {
-    alert('Sending Request...'); 
-    
+toast('Sending Request...');
+
     const user = await localStorage.getItem("user");
 
     if (user === null) {
       // Handle navigation if user is null
-      return;  
+      return;
     }
-    
-    const parsedUser = JSON.parse(user); 
-    const userId = parsedUser.user.user_id; 
+
+    const parsedUser = JSON.parse(user);
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
     const payload = {};
     HTTPPostWithToken(
@@ -66,30 +68,30 @@ const PaymentRequest: React.FC = () => {
       token
     )
       .then((data) => {
-        alert(data.code === 200 ? data.message : data.errorMessage);
+        toast(data.code === 200 ? data.message : data.errorMessage);
       })
-      .catch(() => alert('An error occurred, please try again.'));
+      .catch(() => toast('An error occurred, please try again.'));
   };
 
- 
+
   const getGroup = async (query = '') => {
-    setIsLoading(true); 
+    setIsLoading(true);
     const user = await localStorage.getItem("user");
 
     if (user === null) {
       // Handle navigation if user is null
-      return;  
+      return;
     }
-    
-    const parsedUser = JSON.parse(user); 
-    const userId = parsedUser.user.user_id; 
+
+    const parsedUser = JSON.parse(user);
+    const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
     HTTPGetWithToken(
       `${BASEURL}/group/member/all/${userId}?page=${page}&query=${query}`,
       token
     )
       .then((data) => {
-        console.log("",data)
+        console.log("", data)
         if (data.code === 200) {
           setGroup((prev) => [
             ...prev,
@@ -100,7 +102,7 @@ const PaymentRequest: React.FC = () => {
           ]);
         }
       })
-      .catch(() => alert('Error fetching groups.'))
+      .catch(() => toast('Error fetching groups.'))
       .finally(() => setIsLoading(false));
   };
 
@@ -113,15 +115,15 @@ const PaymentRequest: React.FC = () => {
     getGroup();
   }, []);
 
-  return ( 
-    <Box sx={{ padding: 5 ,backgroundColor:"#fff"}}>
-    
+  return (
+    <Box sx={{ padding: 5, backgroundColor: "#fff" }}>
+      <Toaster />
       <Grid container spacing={2} sx={{ paddingX: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{color:"#000",fontWeight:"bold"}}>
+        <Typography variant="h4" gutterBottom sx={{ color: "#000", fontWeight: "bold" }}>
           Groups
         </Typography>
-      </Grid> 
- 
+      </Grid>
+
 
       {/* Search Input */}
       <Box p={2}>
@@ -146,15 +148,15 @@ const PaymentRequest: React.FC = () => {
       <Box p={2}>
         {isLoading && group.length === 0 ? (
           <Box textAlign="center" mt={3}>
-             <span style={{ color: '#4fb26e', fontSize: '16px' }}>Loading.....</span>
+            <span style={{ color: '#4fb26e', fontSize: '16px' }}>Loading.....</span>
           </Box>
         ) : (
           <List>
             {group.map((item) => (
               <ListItem
                 key={item.id}
-                button 
-                onClick={() => window.alert("Long press to accept invitation")}
+                button
+                onClick={() => window.toast("Long press to accept invitation")}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   handleGroupPress(item.id);
@@ -184,11 +186,11 @@ const PaymentRequest: React.FC = () => {
       {/* Load More Button */}
       {group.length > 0 && (
         <Box textAlign="center" mt={2}>
-          <Button style={{backgroundColor:"#4fb26e"}} onClick={handleLoadMore} variant="contained">
+          <Button style={{ backgroundColor: "#4fb26e" }} onClick={handleLoadMore} variant="contained">
             Load More
           </Button>
         </Box>
-      )} 
+      )}
     </Box>
   );
 };

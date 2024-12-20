@@ -22,7 +22,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
+import toast, { Toaster } from 'react-hot-toast';
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
 import Github from 'mdi-material-ui/Github'
@@ -80,7 +80,7 @@ const LoginPage = () => {
  
     if (!phone || !password) {
         setLoading(false);
-        alert("Please fill in all the required fields.");
+        toast("Please fill in all the required fields.");
         return;
     }
 
@@ -99,13 +99,14 @@ const LoginPage = () => {
         console.log("Response data:", data);
 
         if (data.code === 200) {
+          toast("Successfully logged in. Redirecting to dashboard.")
             localStorage.setItem("user", JSON.stringify(data));
             router.push('/');
         } else {
-            alert(data.message || "Incorrect password. Please check your phone number.");
+            toast(data.message || "Incorrect password. Please check your phone number.");
         }
     } else {
-        alert("Failed to receive a response from the server.");
+        toast("Failed to receive a response from the server.");
     }
 };
 
@@ -127,6 +128,7 @@ const LoginPage = () => {
 
   return (
     <Box className='content-center'>
+      <Toaster />
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
            <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

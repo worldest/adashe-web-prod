@@ -15,6 +15,7 @@ import { Menu as MenuIcon, Notifications as NotificationsIcon } from '@mui/icons
 import { HTTPGetWithToken, HTTPPatchWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
 import GroupDetailsModal from 'src/@core/components/Modal';
+import toast, { Toaster } from 'react-hot-toast';
 
 const PaymentRequest: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
@@ -170,8 +171,6 @@ const PaymentRequest: React.FC = () => {
         <Paper
           elevation={3}
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
             mt: 4,
             width: '100%',
             maxWidth: 800,
@@ -181,16 +180,13 @@ const PaymentRequest: React.FC = () => {
           {/* Tabs Menu */}
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '30%',
-              borderRight: '1px solid #ddd',
             }}
           >
             <Tabs
-              orientation="vertical"
+              orientation="horizontal"
               value={selectedTab}
               onChange={handleTabChange}
+              style={{overFlowX: "auto"}}
               sx={{
                 '& .MuiTab-root': {
                   alignItems: 'flex-start',
@@ -208,7 +204,7 @@ const PaymentRequest: React.FC = () => {
             >
               <Tab label="Edit Profile" />
               <Tab label="Change Password" />
-              <Tab label="Help & Support" />
+              <Tab label="Help" />
             </Tabs>
           </Box>
 
@@ -220,7 +216,7 @@ const PaymentRequest: React.FC = () => {
             }}
           >
             {selectedTab === 0 && <EditProfile />}
-            {selectedTab === 1 && <ChangePassword />}
+            {selectedTab === 1 && <ChangePassword email={email} />}
             {selectedTab === 2 && <HelpSupport />}
           </Box>
         </Paper>
@@ -259,7 +255,7 @@ const EditProfile = () => {
       const response = await HTTPPatchWithToken(`${BASEURL}/user/update/${userId}`, body, token)
       console.log(response)
       if (response.code === 200) {
-        alert(response.message,)
+        toast(response.message,)
         setSnackbar({
           open: true,
           message: response.message,
@@ -318,6 +314,7 @@ const EditProfile = () => {
   }, []);
   return(
       <Box sx={{ p: 4, backgroundColor: '#f9f9f9', borderRadius: 2, maxWidth: 600, mx: 'auto' }}>
+        <Toaster />
       <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
         Edit Profile
       </Typography>
@@ -460,8 +457,7 @@ const EditProfile = () => {
   );
 }
 
-const ChangePassword = () => {
-  const [email, setEmail] = useState('');
+const ChangePassword = ({email}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const handleContinue = async () => {
@@ -499,7 +495,7 @@ const ChangePassword = () => {
 
    return(
 <Box sx={{ p: 4, backgroundColor: '#f9f9f9', borderRadius: 2, maxWidth: 600, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>
+      <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
         Change Password
       </Typography>
 
@@ -510,6 +506,7 @@ const ChangePassword = () => {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
         fullWidth
+        disabled
         sx={{ 
           mb: 3 ,
           '& .MuiOutlinedInput-root': {
