@@ -40,6 +40,7 @@
     "build": "next build",
     "start": "next start",
     "export": "next export",
+    "heroku-postbuild": "yarn install && yarn build",
     "lint": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
