@@ -1,4 +1,3 @@
-
 //@ts-nocheck
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import {
@@ -684,7 +683,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
   useEffect(() => {
     const user_auth = localStorage.getItem("user");
-    
+
     if (user_auth !== null) {
       const parsedUser = JSON.parse(user_auth); // Parse the user object
       const userId = parsedUser.user.user_id;
@@ -1153,7 +1152,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         {/* Bottom Fixed Tabs */}
 
         {groupData.host === auth.user_id && (
-            <Grid
+          <Grid
             container
             justifyContent="space-around"
             sx={{
@@ -1172,7 +1171,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                 Manage Group
               </Typography>
             </Grid>
-      
+
             <Grid item xs={3} textAlign="center">
               <IconButton onClick={() => setHisModalVisibles(true)}>
                 <HistoryIcon sx={{ color: '#4fb26e' }} />
@@ -1181,7 +1180,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                 Contribution History
               </Typography>
             </Grid>
-      
+
             <Grid item xs={3} textAlign="center">
               <IconButton onClick={() => setPayModalVisibles(true)}>
                 <AttachMoneyIcon sx={{ color: '#4fb26e' }} />
@@ -1190,7 +1189,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                 Process Payout
               </Typography>
             </Grid>
-      
+
             <Grid item xs={3} textAlign="center">
               <IconButton onClick={() => setInModalVisibles(true)}>
                 <PersonAddIcon sx={{ color: '#4fb26e' }} />
@@ -1550,7 +1549,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         <Box>
                           <Typography variant="body1" sx={{ fontWeight: "bold", color: "#000" }}>
                             {o.first_name} {o.last_name}
-                            
+
                           </Typography>
                           <Typography variant="caption" sx={{ marginTop: 1 }}>
                             {o.created_at.substring(0, 19)}
