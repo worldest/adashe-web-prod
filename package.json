@@ -77,14 +77,11 @@
     "recharts": "^2.12.7",
     "tslib": "^2.7.0"
   },
-  "engines": {
-    "node": "18.x",
-    "yarn": "1.22.19"
-  },
   "devDependencies": {
     "@types/node": "16.11.11",
     "@types/nprogress": "^0.2.0",
     "@types/react": "17.0.37",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-datepicker": "^4.3.2",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.11.0",
