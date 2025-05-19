@@ -13,7 +13,7 @@ import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiAvatar, { AvatarProps } from '@mui/material/Avatar'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 // ** Icons Imports
 import toast, { Toaster } from 'react-hot-toast';
@@ -120,9 +120,9 @@ const NotificationDropdown = () => {
 
     const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
- 
+
     try {
-      const data = await  HTTPPatchWithToken(`${BASEURL}/group/accept/${paymentId}/${userId}`, {}, token)
+      const data = await HTTPPatchWithToken(`${BASEURL}/group/accept/${paymentId}/${userId}`, {}, token)
       console.log("Grop", data)
       if (data.code === 200) {
         toast("Invitation accepted. Notification sent to user");
@@ -132,7 +132,7 @@ const NotificationDropdown = () => {
       }
     } catch (error) {
       toast("An error occurred. Please retry.");
-    } 
+    }
   };
 
   const handleDeclineInvitation = async (paymentId) => {
@@ -146,8 +146,8 @@ const NotificationDropdown = () => {
     const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
 
-    try { 
-      const data = await  HTTPPatchWithToken(`${BASEURL}/group/decline/${paymentId}/${userId}`, {}, token)
+    try {
+      const data = await HTTPPatchWithToken(`${BASEURL}/group/decline/${paymentId}/${userId}`, {}, token)
       if (data.code === 200) {
         toast("Invitation rejected");
         getGroup();
@@ -156,7 +156,7 @@ const NotificationDropdown = () => {
       }
     } catch (error) {
       toast("An error occurred. Please retry.");
-    } 
+    }
   };
 
   const router = useRouter();
@@ -167,7 +167,7 @@ const NotificationDropdown = () => {
   const [profileimg, setprofileimg] = useState(null);
   const [groups, setGroups] = useState([]); // Initialize your group data
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false);
   const handleGroupPress = (groupId) => {
     setSelectedGroupId(groupId);
     setModalVisible(true);
@@ -202,16 +202,17 @@ const NotificationDropdown = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const getGroup = () => { 
-    const user = localStorage.getItem("user"); 
-  if (user === null) {
-    router.push('/pages/login');
-    return;
-  }
-  const parsedUser = JSON.parse(user); // Now it's parsed properly
-   
-  const userId = parsedUser.user.user_id; 
-  const token = parsedUser.user.token;   
+  const getGroup = () => {
+
+    const user = localStorage.getItem("user");
+    if (user === null) {
+      router.push('/pages/login');
+      return;
+    }
+    const parsedUser = JSON.parse(user); // Now it's parsed properly
+
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token;
     HTTPGetWithToken(`${BASEURL}/group/member/pending/${userId}`, token)
       .then(data => {
         console.log(data)
@@ -229,7 +230,7 @@ const NotificationDropdown = () => {
 
         } else {
           // Handle error cases
-          console.error('Error fetching KYC data:', data.message); 
+          console.error('Error fetching KYC data:', data.message);
         }
       })
       .catch(error => {
@@ -237,8 +238,8 @@ const NotificationDropdown = () => {
         console.error('Error making HTTP request:', error);
       });
 
-    
-    HTTPGetWithToken(`${BASEURL}/group/member/request/${userId}`,token)
+
+    HTTPGetWithToken(`${BASEURL}/group/member/request/${userId}`, token)
       .then(data => {
         if (data.code == 200) {
           setNotificationPending(data.payload)
@@ -248,12 +249,12 @@ const NotificationDropdown = () => {
         }
       })
       .catch(error => {
-        
+
       })
   };
 
 
-  useEffect(() => { 
+  useEffect(() => {
     getGroup()
   }, []);
 
@@ -282,13 +283,13 @@ const NotificationDropdown = () => {
           </Box>
         </MenuItem>
         <ScrollWrapper>
-        <div style={{ padding: '15px' }}>  
+          <div style={{ padding: '15px' }}>
             <p>Pending group invites</p>
             {group.map((payment) => (
               <div
                 key={payment.id}
                 style={{
-                  backgroundColor: "#f0f0f0", 
+                  backgroundColor: "#f0f0f0",
                   borderRadius: "10px",
                   boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
                   width: "98%",
@@ -296,30 +297,30 @@ const NotificationDropdown = () => {
                   padding: "15px",
                   marginBottom: "20px",
                 }}
-              > 
-              <div
-                onClick={() => handleGroupPress(payment.id)}
-                style={{
-                  display: "flex",
-                  alignItems: "center", 
-                  background:"#fff", 
-                  borderRadius: "10px",
-                }}
               >
-                <div style={{marginLeft:8}}>
-                  <Image
-                    src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
-                    alt='Logo'
-                    width={30}
-                    height={30}
-                    style={{ objectFit: 'contain' }}
-                  />
-                </div>
-                  <div style={{marginLeft:10}}>
-                    <h3 style={{fontSize:16,color:"#000"}}>{payment.group_name}</h3>
-                    <p style={{fontSize:12}}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
+                <div
+                  onClick={() => handleGroupPress(payment.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    background: "#fff",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <div style={{ marginLeft: 8 }}>
+                    <Image
+                      src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                      alt='Logo'
+                      width={30}
+                      height={30}
+                      style={{ objectFit: 'contain' }}
+                    />
                   </div>
-                  <p style={{fontSize:14,color:"#000",fontWeight:"bold",marginLeft:10}}>₦{payment.amount} ({payment.payment_interval})</p>
+                  <div style={{ marginLeft: 10 }}>
+                    <h3 style={{ fontSize: 16, color: "#000" }}>{payment.group_name}</h3>
+                    <p style={{ fontSize: 12 }}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
+                  </div>
+                  <p style={{ fontSize: 14, color: "#000", fontWeight: "bold", marginLeft: 10 }}>₦{payment.amount} ({payment.payment_interval})</p>
                 </div>
                 <p style={{ color: "red", textAlign: "center" }}>
                   Invited by: {payment.first_name} {payment.last_name}
@@ -368,12 +369,12 @@ const NotificationDropdown = () => {
               <div
                 key={payment.id}
                 style={{
-                  backgroundColor: "#f0f0f0", 
+                  backgroundColor: "#f0f0f0",
                   borderRadius: "10px",
                   boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
                   width: "98%",
                   margin: "auto",
-                  padding: "10px", 
+                  padding: "10px",
                   marginBottom: "20px",
                 }}
               >
@@ -381,23 +382,23 @@ const NotificationDropdown = () => {
                   onClick={() => handleGroupPress(payment.id)}
                   style={{
                     display: "flex",
-                    alignItems: "center", 
-                    background:"#fff", 
+                    alignItems: "center",
+                    background: "#fff",
                     borderRadius: "10px",
                   }}
                 >
-                  <div style={{marginLeft:8}}>
-                  <Image
-                    src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
-                    alt='Logo'
-                    width={30}
-                    height={30}
-                    style={{ objectFit: 'contain' }}
-                  />
+                  <div style={{ marginLeft: 8 }}>
+                    <Image
+                      src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                      alt='Logo'
+                      width={30}
+                      height={30}
+                      style={{ objectFit: 'contain' }}
+                    />
                   </div>
-                  <div style={{marginLeft:10}}>
-                    <h3 style={{fontSize:16,color:"#000"}}>{`${payment.first_name} ${payment.last_name}`}</h3>
-                    <p style={{fontSize:12,}}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
+                  <div style={{ marginLeft: 10 }}>
+                    <h3 style={{ fontSize: 16, color: "#000" }}>{`${payment.first_name} ${payment.last_name}`}</h3>
+                    <p style={{ fontSize: 12, }}>{payment.created_at.replace("T", " ").replace("000Z", "")}</p>
                   </div>
                 </div>
                 <p style={{ color: "red", textAlign: "center" }}>
@@ -425,19 +426,19 @@ const NotificationDropdown = () => {
                         router.push('/pages/login');
                         return;
                       }
-                  
+
                       const parsedUser = JSON.parse(user); // Now it's parsed properly
-                  
+
                       const userId = parsedUser.user.user_id;
                       const token = parsedUser.user.token;
-                   
+
                       var body = {
-                        userid:userId,
+                        userid: userId,
                         invited_userid: payment.user_phone,
                         group_id: payment.group_id
                       }
                       try {
-                        const data = await HTTPPostWithToken(`${BASEURL}/group/invite`,body,token);
+                        const data = await HTTPPostWithToken(`${BASEURL}/group/invite`, body, token);
                         console.log("Grop", data)
                         if (data.code === 200) {
                           toast("Invitation accepted. Notification sent to user");
@@ -448,7 +449,7 @@ const NotificationDropdown = () => {
                       } catch (error) {
                         toast("An error occurred. Please retry.");
                       }
- 
+
                     }}
                   >
                     Accept
@@ -473,8 +474,8 @@ const NotificationDropdown = () => {
                       const userId = parsedUser.user.user_id;
                       const token = parsedUser.user.token;
 
-                      try { 
-                        const data = await  HTTPDeleteWithToken(`${BASEURL}/group/member/request/${userId}/${payment.id}`, {},token)
+                      try {
+                        const data = await HTTPDeleteWithToken(`${BASEURL}/group/member/request/${userId}/${payment.id}`, {}, token)
                         if (data.code === 200) {
                           toast("Invitation rejected");
                           getGroup();
@@ -495,7 +496,7 @@ const NotificationDropdown = () => {
             <div style={{ height: "200px" }}></div>
           </div>
         </ScrollWrapper>
-           
+
       </Menu>
     </Fragment>
   )

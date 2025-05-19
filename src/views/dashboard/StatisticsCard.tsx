@@ -2,8 +2,8 @@
 import { ReactElement, useEffect, useState } from 'react';
 
 // MUI Imports
-import { Box, Grid, Card, IconButton, Typography, CardContent, Paper, CardHeader } from '@mui/material';
-import { DotsVertical, TrendingUp, CellphoneLink, AccountOutline, AccountGroup, PlusCircle } from 'mdi-material-ui';
+import { Box, Grid, Card, IconButton, Typography, CardContent, Paper, CardHeader, Button } from '@mui/material';
+import { DotsVertical, TrendingUp, CellphoneLink, AccountOutline, AccountGroup, PlusCircle, ArrowRight } from 'mdi-material-ui';
 import Image from 'next/image';
 import GroupDetailsModal from 'src/@core/components/Modal';
 import { HTTPGetWithToken } from 'src/Services';
@@ -218,7 +218,7 @@ const StatisticsCard = () => {
   // Render Stats Section
   const renderStats = () => {
     return salesData.map((item, index) => (
-      <Grid item xs={6} sm={6} key={index}>
+      <Grid item xs={2} sm={2} key={index}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
             onClick={() => router.push(item.path)}
@@ -247,14 +247,16 @@ const StatisticsCard = () => {
   const renderBoxes = () => {
     const statsData = [
       { id: 1, title: 'Total Contribution', amount: `₦ ${totalCont}` },
-      { id: 2, title: 'Total Payout', amount: `₦ ${totalPayout !== null ? totalPayout : 0}` }
+      { id: 2, title: 'Total Payout', amount: `₦ ${totalPayout !== null ? totalPayout : 0}` },
+      { id: 2, title: 'My Groups', amount: group.length }
     ];
 
     return statsData.map((stat) => (
-      <Grid item xs={12} sm={6} key={stat.id}>
+      <Grid item xs={12} sm={4} key={stat.id}>
         <Paper
+          style={{ minHeight: 120 }}
           sx={{
-            display: 'flex',
+            // display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '30px',
@@ -285,60 +287,82 @@ const StatisticsCard = () => {
         key={group.id}
         onClick={() => handleGroupClick(group.id)} // Trigger modal when clicked
         sx={{
-          display: 'flex',
+          // display: 'flex',
+          display: "inline-block",
+          marginRight: 10,
+          maxWidth: 340,
+          minHeight: 350,
           alignItems: 'center',
+
           justifyContent: 'space-between',
-          padding: '15px',
-          margin: '10px 0',
+          // padding: '15px',
+          margin: '10px 10px',
+          overflow: "hidden",
           border: '2px solid',  // Set a thick border
           backgroundColor: '#e8f9ed',
           borderColor: '#e2e3e5',
           cursor: 'pointer',
-          borderRadius: '8px',
-          boxShadow: 0
+          borderRadius: '18px',
+          boxShadow: "1px 1px 11px solid #333"
         }}
       >
         {/* Column 1: Avatar */}
-        <Box sx={{ flexBasis: '10%', textAlign: 'center' }}>
-          <Box
-            sx={{
-              bgcolor: '#fff',
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              justifyContent: 'center',
-              alignContent: 'center'
-            }}
-          >
-            <Image
-              src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
-              alt='Logo'
-              width={30}
-              height={30}
-              style={{ objectFit: 'contain' }}
-            />
+        <img src="https://images.unsplash.com/photo-1662144374178-753a74fa28fb?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style={{ width: "100%", height: "auto" }} />
+        <br /><br />
+        <Box sx={{ paddingInline: 5, flexBasis: '10%', textAlign: 'right' }}>
+          <Typography style={{ padding: 7, color: "#fff", borderRadius: 20, backgroundColor: group.group_status == 1 ? "#000" : group.group_status === "running" ? "#2FAB0690" : "#DB756B", fontWeight: "900", width: 120, textAlign: "center", float: "right", marginBottom: 20 }}>{group.group_status == 1 ? "Inactive" : group.group_status === "running" ? "Running" : "Closed"}</Typography>
+        </Box>
+        <div style={{ padding: 15 }}>
+          <Box sx={{ flexBasis: '10%', textAlign: 'center', marginBottom: 5 }}>
+            <Box
+              sx={{
+                bgcolor: '#fff',
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                justifyContent: 'center',
+                alignContent: 'center'
+              }}
+            >
+              <Image
+                src='/images/user_10968773.png' // Assuming your image is located at public/image/logo.png
+                alt='Logo'
+                width={30}
+                height={30}
+                style={{ objectFit: 'contain' }}
+              />
+            </Box>
           </Box>
-        </Box>
 
-        {/* Column 2: Group Details */}
-        <Box sx={{ flexBasis: '70%' }}>
-          <Typography variant='h6' sx={{ color: '#000' }} fontWeight='bold'>
-            {group.group_name}
-          </Typography>
-          <Typography variant='body2' sx={{ color: 'red' }}>
-            Next Payment: {group.next_payment.substring(0, 10)}
-          </Typography>
-          <Typography variant='body2' color='textSecondary'>
-            Created On: {group.start_date}
-          </Typography>
-        </Box>
+          {/* Column 2: Group Details */}
+          <Box sx={{ flexBasis: '70%' }}>
+            <Typography variant='h6' sx={{ color: '#000' }} fontWeight='bold'>
+              {group.group_name}
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'red' }}>
+              Next Payment: {group.next_payment.substring(0, 10)}
+            </Typography>
+            <Typography variant='body2' color='textSecondary'>
+              Created On: {group.start_date}
+            </Typography>
+          </Box>
 
-        {/* Column 3: Amount */}
-        <Box sx={{ flexBasis: '20%', textAlign: 'right' }}>
-          <Typography variant='h6' sx={{ color: '#000' }} fontWeight='bold'>
-            ₦{group.group_value.toFixed(2)}
-          </Typography>
-        </Box>
+          {/* Column 3: Amount */}
+          <Box sx={{ flexBasis: '20%', textAlign: 'left' }}>
+            <p style={{ fontWeight: "700" }}>Total Contribution:</p>
+            <Typography variant='h6' sx={{ lineHeight: .1, color: '#000' }} fontWeight='bold'>
+              ₦{group.group_value.toFixed(2)}
+            </Typography>
+          </Box>
+          <Button onClick={() => handleGroupClick(group.id)} style={{ marginTop: 15, float: "right" }}>
+            <Typography
+              style={{ padding: 7, color: "#fff", borderRadius: 20, justifyContent: "center", alignItems: "center", backgroundColor: group.group_status == 1 ? "#000" : group.group_status === "running" ? "#2FAB0690" : "#DB756B", fontWeight: "900", width: 120, textAlign: "center", marginBottom: 20 }}
+            >
+              <span style={{ justifyContent: "center", alignItems: "center", display: "flex" }}><span style={{ fontSize: 12, fontWeight: "700" }}>View</span><span><ArrowRight style={{ fontSize: 18 }} /></span></span>
+            </Typography>
+          </Button>
+        </div>
+
       </Paper>
     ));
   };
@@ -357,7 +381,7 @@ const StatisticsCard = () => {
 
   return (
     <>
-      <Card sx={{ backgroudColor: '#edf2ee' }}>
+      <Card style={{ backgroundColor: "#ffffff", boxShadow: "none" }}>
         <CardHeader
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
