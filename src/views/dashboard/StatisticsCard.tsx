@@ -11,7 +11,7 @@ import { BASEURL } from 'src/Constant/Link';
 import { useRouter } from 'next/router'
 
 import { amber } from '@mui/material/colors';
-import { FiShield } from 'react-icons/fi';
+// import { FiShield } from 'react-icons/fi';
 // Dummy Data for Active Groups
 const activeGroups = [
   {
@@ -414,55 +414,55 @@ const StatisticsCard = () => {
             {/* Render Statistics */}
             {renderStats()}
           </Grid>
-          <br/>
-          
+          <br />
+
           {data.user_nin === null ?
-               <Paper
-                elevation={0}
+            <Paper
+              elevation={0}
+              sx={{
+                backgroundColor: amber[50],
+                border: `1px solid ${amber[100]}`,
+                borderRadius: 2,
+                p: 2,
+                mb: 4,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {/* <FiShield style={{ color: amber[600], width: 24, height: 24, marginRight: 16 }} /> */}
+
+              <Box flex={1}>
+                <Typography variant="subtitle1" fontWeight="600" color={amber[800]}>
+                  Account Verification Needed
+                </Typography>
+                <Typography variant="body2" color={amber[700]}>
+                  Upgrade your account to access full features
+                </Typography>
+              </Box>
+
+              <Button
+                onClick={() => router.push('/Kyc')}
                 sx={{
-                  backgroundColor: amber[50],
-                  border: `1px solid ${amber[100]}`,
+                  backgroundColor: amber[100],
+                  color: amber[800],
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  fontSize: 14,
+                  px: 2,
+                  py: 1,
                   borderRadius: 2,
-                  p: 2,
-                  mb: 4,
-                  display: 'flex',
-                  alignItems: 'center',
+                  '&:hover': {
+                    backgroundColor: amber[200],
+                  },
                 }}
               >
-                <FiShield style={{ color: amber[600], width: 24, height: 24, marginRight: 16 }} />
-
-                <Box flex={1}>
-                  <Typography variant="subtitle1" fontWeight="600" color={amber[800]}>
-                    Account Verification Needed
-                  </Typography>
-                  <Typography variant="body2" color={amber[700]}>
-                    Upgrade your account to access full features
-                  </Typography>
-                </Box>
-
-                <Button
-                  onClick={() => router.push('/Kyc')}
-                  sx={{
-                    backgroundColor: amber[100],
-                    color: amber[800],
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    fontSize: 14,
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    '&:hover': {
-                      backgroundColor: amber[200],
-                    },
-                  }}
-                >
-                  Upgrade Now
-                </Button>
-              </Paper>
-          :<></>
+                Upgrade Now
+              </Button>
+            </Paper>
+            : <></>
           }
 
-              <br/>
+          <br />
 
           <Typography variant='h6' sx={{ mt: 4, color: '#d96b60' }}>
             Active Groups
