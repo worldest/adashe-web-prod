@@ -1,7 +1,7 @@
- //@ts-nocheck
+//@ts-nocheck
 "use client";
-
-import { useState, useRef, useEffect } from 'react'; 
+//deploy
+import { useState, useRef, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -18,11 +18,11 @@ import {
   Alert
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { HTTPPostWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
 
-const KYCVerification = () => { 
+const KYCVerification = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [bvn, setBvn] = useState("");
   const [image, setImage] = useState(null);
@@ -101,12 +101,12 @@ const KYCVerification = () => {
         setIsLoading(false);
         return;
       }
-      
+
       // First upload the file
       const formData = new FormData();
       formData.append('file', image);
-      
-      const uploadResponse = await fetch('https://kashrite.com/server/file/upload.php', {
+
+      const uploadResponse = await fetch('https://payload-x.com/server/cdn/file/upload.php', {
         method: 'POST',
         body: formData,
       });
@@ -114,16 +114,17 @@ const KYCVerification = () => {
 
       if (!uploadData.link) throw new Error('Upload failed');
 
-      const payload = { 
+      const payload = {
         means_of_id_link: uploadData.link,
         id_number: idNumber,
         dob,
-        expiry_date: expiryDate,
+        bvn,
+        expiry: expiryDate,
         address
       };
 
-      const endpoint = `${BASEURL}/kyc/upgrade/tier_three/${user.user_id}`;
-      const response = await HTTPPostWithToken(endpoint, payload, user.token);
+      const endpoint = `${BASEURL}/kyc/upgrade/tier_three/${user.user.user_id}`;
+      const response = await HTTPPostWithToken(endpoint, payload, user.user.token);
 
       if (response.code === 200) {
         showToast(response.message, 'success');
@@ -152,38 +153,38 @@ const KYCVerification = () => {
       <Typography variant="h6" gutterBottom>
         BVN Verification
       </Typography>
-      <br/>
-      <br/>
+      <br />
+      <br />
       <TextField
         fullWidth
         label="BVN Number"
         variant="outlined"
         value={bvn}
-        onChange={(e) => setBvn(e.target.value)} 
+        onChange={(e) => setBvn(e.target.value)}
         sx={{
-        marginBottom: 4,
-        '& .MuiOutlinedInput-root': {
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-            borderColor: '#d96b60', // Border color on focus
+              borderColor: '#d96b60', // Border color on focus
             },
             '& input::placeholder': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
             },
             '&.Mui-focused input::placeholder': {
-            color: '#4fb26e', // Placeholder color on focus
+              color: '#4fb26e', // Placeholder color on focus
             }
-        },
-        '& .MuiInputLabel-root': {
+          },
+          '& .MuiInputLabel-root': {
             color: 'rgba(0, 0, 0, 0.54)', // Default label color
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
             color: '#4fb26e', // Label color when focused
-        }
+          }
         }}
         inputProps={{ maxLength: 11 }}
       />
       <Typography variant="body2" color="text.secondary">
-        Adashe does not store your BVN. We only request it for compliance and account 
+        Adashe does not store your BVN. We only request it for compliance and account
         verification purposes, and it will not be stored or retained in our systems.
       </Typography>
       <Box sx={{ mt: 4 }}>
@@ -210,70 +211,68 @@ const KYCVerification = () => {
       <Typography variant="h6" gutterBottom>
         ID Verification
       </Typography>
-      <br/>
-      <br/>
+      <br />
+      <br />
+      <TextField
+        fullWidth
+        label="BVN Number"
+        variant="outlined"
+        value={bvn}
+        onChange={(e) => setBvn(e.target.value)}
+        sx={{
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+              borderColor: '#d96b60', // Border color on focus
+            },
+            '& input::placeholder': {
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+            },
+            '&.Mui-focused input::placeholder': {
+              color: '#4fb26e', // Placeholder color on focus
+            }
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(0, 0, 0, 0.54)', // Default label color
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: '#4fb26e', // Label color when focused
+          }
+        }}
+        inputProps={{ maxLength: 11 }}
+      />
+      <br />
+      <br />
       <TextField
         fullWidth
         label="ID Number"
         variant="outlined"
         value={idNumber}
         onChange={(e) => setIdNumber(e.target.value)}
-        
+
         sx={{
-        marginBottom: 4,
-        '& .MuiOutlinedInput-root': {
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-            borderColor: '#d96b60', // Border color on focus
+              borderColor: '#d96b60', // Border color on focus
             },
             '& input::placeholder': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
             },
             '&.Mui-focused input::placeholder': {
-            color: '#4fb26e', // Placeholder color on focus
+              color: '#4fb26e', // Placeholder color on focus
             }
-        },
-        '& .MuiInputLabel-root': {
+          },
+          '& .MuiInputLabel-root': {
             color: 'rgba(0, 0, 0, 0.54)', // Default label color
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
             color: '#4fb26e', // Label color when focused
-        }
+          }
         }}
       />
-      <br/>
-      <br/>
-      <TextField
-        fullWidth
-        label="Date of Birth"
-        type="date"
-        variant="outlined"
-        InputLabelProps={{ shrink: true }}
-        value={dob}
-        onChange={(e) => setDob(e.target.value)}
-         
-        sx={{
-        marginBottom: 4,
-        '& .MuiOutlinedInput-root': {
-            '&.Mui-focused fieldset': {
-            borderColor: '#d96b60', // Border color on focus
-            },
-            '& input::placeholder': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
-            },
-            '&.Mui-focused input::placeholder': {
-            color: '#4fb26e', // Placeholder color on focus
-            }
-        },
-        '& .MuiInputLabel-root': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default label color
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: '#4fb26e', // Label color when focused
-        }
-        }}
-      />
-      <br/>
-      <br/>
+      <br />
+      <br />
       <TextField
         fullWidth
         label="Expiry Date"
@@ -282,30 +281,63 @@ const KYCVerification = () => {
         InputLabelProps={{ shrink: true }}
         value={expiryDate}
         onChange={(e) => setExpiryDate(e.target.value)}
-        
+
         sx={{
-        marginBottom: 4,
-        '& .MuiOutlinedInput-root': {
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-            borderColor: '#d96b60', // Border color on focus
+              borderColor: '#d96b60', // Border color on focus
             },
             '& input::placeholder': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
             },
             '&.Mui-focused input::placeholder': {
-            color: '#4fb26e', // Placeholder color on focus
+              color: '#4fb26e', // Placeholder color on focus
             }
-        },
-        '& .MuiInputLabel-root': {
+          },
+          '& .MuiInputLabel-root': {
             color: 'rgba(0, 0, 0, 0.54)', // Default label color
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
             color: '#4fb26e', // Label color when focused
-        }
+          }
         }}
       />
-      <br/>
-      <br/>
+      <br />
+      <br />
+      <TextField
+        fullWidth
+        label="Date of Birth"
+        type="date"
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        value={dob}
+        onChange={(e) => setDob(e.target.value)}
+
+        sx={{
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+              borderColor: '#d96b60', // Border color on focus
+            },
+            '& input::placeholder': {
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+            },
+            '&.Mui-focused input::placeholder': {
+              color: '#4fb26e', // Placeholder color on focus
+            }
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(0, 0, 0, 0.54)', // Default label color
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: '#4fb26e', // Label color when focused
+          }
+        }}
+      />
+
+      <br />
+      <br />
       <TextField
         fullWidth
         label="Address"
@@ -314,33 +346,33 @@ const KYCVerification = () => {
         rows={3}
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        
+
         sx={{
-        marginBottom: 4,
-        '& .MuiOutlinedInput-root': {
+          marginBottom: 4,
+          '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-            borderColor: '#d96b60', // Border color on focus
+              borderColor: '#d96b60', // Border color on focus
             },
             '& input::placeholder': {
-            color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+              color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
             },
             '&.Mui-focused input::placeholder': {
-            color: '#4fb26e', // Placeholder color on focus
+              color: '#4fb26e', // Placeholder color on focus
             }
-        },
-        '& .MuiInputLabel-root': {
+          },
+          '& .MuiInputLabel-root': {
             color: 'rgba(0, 0, 0, 0.54)', // Default label color
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
             color: '#4fb26e', // Label color when focused
-        }
+          }
         }}
       />
-      <br/>
-      <br/>
+      <br />
+      <br />
       <Typography variant="subtitle1" gutterBottom>
         Upload ID Document
-      </Typography> 
+      </Typography>
       <input
         type="file"
         ref={fileInputRef}
@@ -348,7 +380,7 @@ const KYCVerification = () => {
         accept="image/*,.pdf"
         style={{ display: 'none' }}
       />
-      <br/>
+      <br />
       <Button
         variant="outlined"
         component="span"
@@ -397,7 +429,7 @@ const KYCVerification = () => {
           <Typography variant="body1" color="text.secondary" gutterBottom>
             Complete your Know Your Customer verification to access all features
           </Typography>
-          
+
           <Divider sx={{ my: 3 }} />
 
           <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>

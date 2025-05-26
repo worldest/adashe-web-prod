@@ -1,7 +1,7 @@
 //@ts-nocheck
 // ** React Imports
 import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode } from 'react'
-
+//hi
 // ** Next Imports
 import Link from 'next/link'
 
@@ -39,7 +39,7 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration' 
+import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import Image from 'next/image';
 import { HTTPPostNoToken } from 'src/Services'
 import { BASEURL } from 'src/Constant/Link'
@@ -118,15 +118,15 @@ const RegisterPage = () => {
 
     // Prepare the request body
     const body = {
-      phone:phone,
-      password:password,
-      email:email,
-      first_name:firstname,
-      last_name:lastName
+      phone: phone,
+      password: password,
+      email: email,
+      first_name: firstname,
+      last_name: lastName
     };
     setLoading(true);
     // Perform the HTTP POST request
-    HTTPPostNoToken(`${BASEURL}/auth/register`,body)
+    HTTPPostNoToken(`${BASEURL}/auth/register`, body)
       .then(data => {
         setLoading(false);
         console.log(data)
@@ -153,19 +153,19 @@ const RegisterPage = () => {
 
 
   return (
-    <Box className='content-center' style={{backgroundColor:"eaf9ef"}}>
+    <Box className='content-center' style={{ backgroundColor: "eaf9ef" }}>
       <Toaster />
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-             <Image
-               src="/images/Logo2.jpg"  // Assuming your image is located at public/image/logo.png
+            <Image
+              src="/images/Logo2.jpg"  // Assuming your image is located at public/image/logo.png
               alt="Logo"
-              width={120} 
-              height={70} 
+              width={120}
+              height={70}
               style={{ objectFit: 'contain' }}
-             />
-              {/* <Typography
+            />
+            {/* <Typography
               variant='h6'
               sx={{
                 ml: 3,
@@ -186,35 +186,35 @@ const RegisterPage = () => {
               Join us today and manage your tasks effortlessly!
             </Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}> 
-          <TextField
-            autoFocus
-            fullWidth
-            id='firstname'
-            label='Surname'
-            sx={{
-              marginBottom: 4,
-              '& .MuiOutlinedInput-root': {
-                '&.Mui-focused fieldset': {
-                  borderColor: '#d96b60', // Border color on focus
+          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
+            <TextField
+              autoFocus
+              fullWidth
+              id='firstname'
+              label='Surname'
+              sx={{
+                marginBottom: 4,
+                '& .MuiOutlinedInput-root': {
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#d96b60', // Border color on focus
+                  },
+                  '& input::placeholder': {
+                    color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+                  },
+                  '&.Mui-focused input::placeholder': {
+                    color: '#4fb26e', // Placeholder color on focus
+                  }
                 },
-                '& input::placeholder': {
-                  color: 'rgba(0, 0, 0, 0.54)', // Default placeholder color
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.54)', // Default label color
                 },
-                '&.Mui-focused input::placeholder': {
-                  color: '#4fb26e', // Placeholder color on focus
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#4fb26e', // Label color when focused
                 }
-              },
-              '& .MuiInputLabel-root': {
-                color: 'rgba(0, 0, 0, 0.54)', // Default label color
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#4fb26e', // Label color when focused
-              }
-            }}
-            value={values.firstname}
-            onChange={handleChange('firstname')}
-          />
+              }}
+              value={values.firstname}
+              onChange={handleChange('firstname')}
+            />
 
             {/* Last Name Input */}
             <TextField
@@ -246,8 +246,8 @@ const RegisterPage = () => {
             />
 
             {/* Phone Number Input with +234 default */}
-            <FormControl fullWidth  
-             sx={{
+            <FormControl fullWidth
+              sx={{
                 marginBottom: 4,
                 '& .MuiOutlinedInput-root': {
                   '&.Mui-focused fieldset': {
@@ -267,16 +267,16 @@ const RegisterPage = () => {
                   color: '#4fb26e', // Label color when focused
                 }
               }}>
-                <InputLabel htmlFor='phone-number'>Phone Number</InputLabel>
-                <OutlinedInput
-                  id='phone-number'
-                  value={values.phone}
-                  onChange={handleChange('phone')}
-                  startAdornment={<InputAdornment position='start'>+234</InputAdornment>}
-                  label='Phone Number'
-                  type='tel' 
-                />
-              </FormControl>
+              <InputLabel htmlFor='phone-number'>Phone Number</InputLabel>
+              <OutlinedInput
+                id='phone-number'
+                value={values.phone}
+                onChange={handleChange('phone')}
+                startAdornment={<InputAdornment position='start'>+234</InputAdornment>}
+                label='Phone Number'
+                type='tel'
+              />
+            </FormControl>
 
 
             {/* Email Input */}
@@ -308,8 +308,8 @@ const RegisterPage = () => {
               onChange={handleChange('email')}
             />
 
-            <FormControl fullWidth   
-            sx={{ 
+            <FormControl fullWidth
+              sx={{
                 '& .MuiOutlinedInput-root': {
                   '&.Mui-focused fieldset': {
                     borderColor: '#d96b60', // Border color on focus
@@ -346,31 +346,31 @@ const RegisterPage = () => {
                       {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
                     </IconButton>
                   </InputAdornment>
-                } 
+                }
               />
-               {/* <Typography variant='body2' color='error'>
+              {/* <Typography variant='body2' color='error'>
                 Password must be strong and more than 6 characters.
               </Typography> */}
             </FormControl>
             <FormControlLabel
-              control={<Checkbox checked={checkboxChecked} onChange={handleCheckboxChange}  sx={{ 
+              control={<Checkbox checked={checkboxChecked} onChange={handleCheckboxChange} sx={{
                 '&.Mui-checked': {
-                color: "#4fb26e",
-                 },
-               }}/>}
+                  color: "#4fb26e",
+                },
+              }} />}
               label={
                 <Fragment>
                   <span>I agree to </span>
                   <Link href='/' passHref>
-                    <LinkStyled style={{color:'#d96b60'}} onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
+                    <LinkStyled style={{ color: '#d96b60' }} onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
                       privacy policy & terms
                     </LinkStyled>
                   </Link>
                 </Fragment>
               }
             />
-            <Button  onClick={handleAcc} fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }} style={{backgroundColor:"#4fb26e"}}>
-            {loading ? <CircularProgress size={24} color='inherit' /> : 'Sign up'}
+            <Button onClick={handleAcc} fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }} style={{ backgroundColor: "#4fb26e" }}>
+              {loading ? <CircularProgress size={24} color='inherit' /> : 'Sign up'}
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
@@ -378,10 +378,10 @@ const RegisterPage = () => {
               </Typography>
               <Typography variant='body2'>
                 <Link passHref href='/pages/login'>
-                  <LinkStyled style={{color:'#d96b60'}} >Sign in instead</LinkStyled>
+                  <LinkStyled style={{ color: '#d96b60' }} >Sign in instead</LinkStyled>
                 </Link>
               </Typography>
-            </Box> 
+            </Box>
           </form>
         </CardContent>
       </Card>
