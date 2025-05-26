@@ -1403,7 +1403,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                 </>
               ) : (
                 <>
-                  <Typography variant="body1" style={{ marginBottom: '10px' }}>Start Group</Typography>
+                  <Typography variant="body1" style={{ marginBottom: '10px' }}>Manage Group</Typography>
 
                   {/* Start Date Picker */}
                   <Typography >Pick a start date</Typography>
@@ -1505,6 +1505,88 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
                   >
                     {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Start Group'}
+                  </Button>
+                  <hr style={{ marginBlock: 20 }} />
+                  <h4>Note: Once a group is started, you can no longer delete it.</h4>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      height: '45px',
+                      borderRadius: '16px',
+                      backgroundColor: "red",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: '10px',
+                      '&:hover': { // Define the hover state here
+                        backgroundColor: "#d96b60",
+                      },
+                    }}
+                    onClick={async () => {
+                      const confirm = window.confirm("Delete Group?")
+                      if (!confirm) {
+                        return null
+                      }
+
+                      setIsLoading3(true);
+                      const user = await localStorage.getItem("user");
+                      const parsedUser = JSON.parse(user); // Parse the stored user
+
+                      const userId = parsedUser.user.user_id;
+                      const token = parsedUser.user.token;
+
+                      // Format the start date as MM-DD-YYYY
+                      const formattedDate = startingDate instanceof Date && !isNaN(startingDate)
+                        ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(startingDate)
+                        : '';
+
+                      const body = {
+                        userid: userId,
+                        start_date: formattedDate, // Use formatted date here
+                        group_id: groupId,
+                      };
+
+                      console.log("BOB", body);
+
+                      // Convert the body object to a JSON string
+                      // const bodyString = JSON.stringify(body);
+
+                      HTTPPostWithToken(`${BASEURL}/group/deleteGroup`, body, token)
+                        .then(data => {
+                          console.log("PES", data);
+                          if (data.code === 200) {
+                            alert("Group deleted successfully");
+                            window.location.href = "/";
+                            // setIsLoading3(false);
+                            // setModalVisible(true);
+                            // setModalType('success');
+                            // setModalMessage(data.message);
+                            // setTimeout(() => {
+                            //   setModalVisible(false);
+                            // }, 3000);
+                            // fetchGroupData();
+                            // fetchGroupTrans();
+                            // fetchGroupPayouts();
+                          } else {
+                            setIsLoading3(false);
+                            setModalVisible(true);
+                            setModalType('warning');
+                            toast(data.errorMessage);
+                          }
+                        })
+                        .catch(() => {
+                          setIsLoading3(false);
+                          setModalVisible(true);
+                          setModalType('warning');
+                          setModalMessage("please retry");
+                        })
+                        .finally(() => {
+                          setIsLoading3(false);
+                        });
+                    }}
+
+                  >
+                    {isLoading3 ? <CircularProgress size={24} color='inherit' /> : 'Delete Group'}
                   </Button>
                 </>
               )}

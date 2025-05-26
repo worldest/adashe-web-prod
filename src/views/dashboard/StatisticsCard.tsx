@@ -290,7 +290,7 @@ const StatisticsCard = () => {
           // display: 'flex',
           display: "inline-block",
           marginRight: 10,
-          maxWidth: 340,
+          maxWidth: 300,
           minHeight: 350,
           alignItems: 'center',
 
@@ -356,7 +356,7 @@ const StatisticsCard = () => {
           </Box>
           <Button onClick={() => handleGroupClick(group.id)} style={{ marginTop: 15, float: "right" }}>
             <Typography
-              style={{ padding: 7, color: "#fff", borderRadius: 20, justifyContent: "center", alignItems: "center", backgroundColor: group.group_status == 1 ? "#000" : group.group_status === "running" ? "#2FAB0690" : "#DB756B", fontWeight: "900", width: 120, textAlign: "center", marginBottom: 20 }}
+              style={{ padding: 7, color: "#fff", borderRadius: 20, justifyContent: "center", alignItems: "center", backgroundColor: "#2FAB0690", fontWeight: "900", width: 120, textAlign: "center", marginBottom: 20 }}
             >
               <span style={{ justifyContent: "center", alignItems: "center", display: "flex" }}><span style={{ fontSize: 12, fontWeight: "700" }}>View</span><span><ArrowRight style={{ fontSize: 18 }} /></span></span>
             </Typography>

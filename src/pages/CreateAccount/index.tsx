@@ -105,7 +105,9 @@ const CreateGroup: React.FC = () => {
           <center>
             <h2>Your account need verification</h2>
             <p></p>
-            <Button variant='primary'>Verify Account</Button>
+            <Button onClick={() => {
+              window.location.href = "/kyc"
+            }} variant='primary'>Verify Account</Button>
           </center>
           :
           <>
