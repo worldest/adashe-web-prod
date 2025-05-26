@@ -17,7 +17,12 @@ import {
   CircularProgress,
   Paper,
   ImageList,
-  ImageListItem
+  ImageListItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import {
@@ -665,6 +670,78 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       setLoading(false);
     }
   };
+
+  const handleDelete= async (member) => {
+    const user = await localStorage.getItem("user");
+    const parsedUser = JSON.parse(user); // Now it's parsed properly
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token;
+    setLoading(true);
+    const body = {
+      userid: userId,  
+      invited_userid:member.user_id,
+      group_id: member.group_id
+    };
+    console.log(body)
+
+    try {
+      const response = await fetch(`${BASEURL}/group/user/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),token
+      });
+      const data = await response.json();
+
+      if (data.code === 200) {
+        setModalVisible(true);
+        fetchGroupData();
+        fetchGroupTrans();
+        fetchGroupPayouts();
+      }
+    } catch (error) {
+      console.error("Failed to accept payout:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleGropDelete= async () => {
+    const user = await localStorage.getItem("user");
+    const parsedUser = JSON.parse(user); // Now it's parsed properly
+    const userId = parsedUser.user.user_id;
+    const token = parsedUser.user.token
+    console.log(token)
+    setLoading(true);
+    const body = {
+      userid: userId,   
+      group_id: groupId
+    };
+
+    console.log(body)
+    try {
+      const response = await fetch(`${BASEURL}/group/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),token
+      });
+      const data = await response.json();
+      console.log(data)
+
+      if (data.code === 200) {
+        setModalVisible(true);
+        fetchGroupData();
+        fetchGroupTrans();
+        fetchGroupPayouts();
+      }
+    } catch (error) {
+      console.error("Failed to accept payout:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const [userDummy, setUserDummy] = useState([
     {
       first_name: "",
@@ -738,6 +815,25 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       setUsers(user_);
     }
   }, [user_]);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const confirmDelete = () => {
+    handleGropDelete(); // Call the delete handler
+    setOpen(false);     // Close the dialog
+  };
+    const [open2, setOpen2] = useState(false);
+
+  const handleOpen2 = () => setOpen2(true);
+  const handleClose2 = () => setOpen2(false);
+
+  const confirmDelete2 = () => {
+    handleDelete(item); // Call the handler with the passed-in object
+    setOpen2(false);
+  };
+
   return (
     <Modal open={isVisible} onClose={onClose}>
       <Box
@@ -762,6 +858,35 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           <Grid item xs={10}>
             <Typography variant="h6" sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name}</Typography>
             <Typography variant="subtitle1" sx={{ color: '#000' }}>{groupData.group_desc}</Typography>
+            <br/>
+             
+             {groupData.host === auth.user_id && (
+        <Button
+          variant="contained"
+          sx={{ borderRadius: 2, alignSelf: "flex-end", backgroundColor: "red" }}
+          onClick={handleOpen}
+        >
+          Delete Group
+        </Button>
+      )}
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this group? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
           </Grid>
 
           {/* Close Icon */}
@@ -958,13 +1083,34 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                       <Button
                         variant="contained"
                         color="error"
-                        sx={{ borderRadius: 2, alignSelf: "flex-end" }}
-                        onClick={() => {
-                          // Remove user logic here
-                        }}
+                        sx={{ borderRadius: 2, alignSelf: "flex-end" }} 
+                        onClick={handleOpen2}
                       >
                         Remove
                       </Button>
+                      
+
+                      <Dialog
+                        open={open2}
+                        onClose={handleClose2}
+                      >
+                        <DialogTitle>Confirm Removal</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            Are you sure you want to remove this item? This action cannot be undone.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose2}>Cancel</Button>
+                          <Button  
+                        onClick={() => {
+                          setOpen2(false)
+                           handleDelete(o)
+                        }} color="error" variant="contained">
+                            Remove
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     </Grid>
                   </Paper>
                 </Grid>
