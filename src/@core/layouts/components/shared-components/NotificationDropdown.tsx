@@ -254,9 +254,9 @@ const NotificationDropdown = () => {
   };
 
 
-  useEffect(() => {
-    getGroup()
-  }, []);
+  // useEffect(() => {
+  //   getGroup()
+  // }, []);
 
   return (
     <Fragment>
