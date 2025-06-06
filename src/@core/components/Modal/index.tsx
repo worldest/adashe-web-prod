@@ -691,16 +691,19 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(body), token
       });
       const data = await response.json();
 
-      if (data.code === 200) {
-        setModalVisible(true);
-        fetchGroupData();
-        fetchGroupTrans();
-        fetchGroupPayouts();
+      if (data.code == 200) {
+        toast("Group Deleted");
+        window.location.href = ""
+
+
+      } else {
+        toast(data.errorMessage)
       }
     } catch (error) {
       console.error("Failed to accept payout:", error);
@@ -726,6 +729,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(body), token
       });
@@ -733,13 +737,18 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       console.log(data)
 
       if (data.code === 200) {
+        toast("Group Deleted");
+        window.location.href = ""
         setModalVisible(true);
         fetchGroupData();
         fetchGroupTrans();
         fetchGroupPayouts();
+      } else {
+        toast(data.errorMessage)
       }
     } catch (error) {
       console.error("Failed to accept payout:", error);
+
     } finally {
       setLoading(false);
     }
@@ -1120,7 +1129,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         <DialogTitle>Confirm Removal</DialogTitle>
                         <DialogContent>
                           <DialogContentText>
-                            Are you sure you want to remove this item? This action cannot be undone.
+                            Are you sure you want to remove this user? This action cannot be undone.
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions>

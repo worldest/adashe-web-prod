@@ -11,6 +11,7 @@ import { BASEURL } from 'src/Constant/Link';
 import { useRouter } from 'next/router'
 
 import { amber } from '@mui/material/colors';
+import { ContactPage } from '@mui/icons-material';
 // import { FiShield } from 'react-icons/fi';
 // Dummy Data for Active Groups
 const activeGroups = [
@@ -214,6 +215,13 @@ const StatisticsCard = () => {
       color: 'primary',
       icon: <AccountGroup sx={{ fontSize: '1.75rem', color: '#000' }} />,
       path: '/Groups'
+    },
+    {
+      stats: `${matchs}`,
+      title: 'Contact List',
+      color: 'primary',
+      icon: <ContactPage sx={{ fontSize: '1.75rem', color: '#000' }} />,
+      path: '/contact-list'
     }
   ];
 
@@ -291,8 +299,8 @@ const StatisticsCard = () => {
         sx={{
           // display: 'flex',
           display: "inline-block",
-          marginRight: 10,
-          width: 350,
+          marginRight: 5,
+          width: 330,
           minHeight: 350,
           alignItems: 'center',
           padding: 5,
