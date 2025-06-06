@@ -220,7 +220,7 @@ const StatisticsCard = () => {
   // Render Stats Section
   const renderStats = () => {
     return salesData.map((item, index) => (
-      <Grid item xs={2} sm={2} key={index}>
+      <Grid item xs={4} sm={3} key={index}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Box
             onClick={() => router.push(item.path)}
@@ -228,8 +228,8 @@ const StatisticsCard = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 56,
-              height: 56,
+              width: 80,
+              height: 80,
               backgroundColor: '#f9e7e590',
               borderRadius: '15px',
               mb: 2
@@ -292,10 +292,10 @@ const StatisticsCard = () => {
           // display: 'flex',
           display: "inline-block",
           marginRight: 10,
-          maxWidth: 300,
+          width: 350,
           minHeight: 350,
           alignItems: 'center',
-
+          padding: 5,
           justifyContent: 'space-between',
           // padding: '15px',
           margin: '10px 10px',
@@ -309,8 +309,8 @@ const StatisticsCard = () => {
         }}
       >
         {/* Column 1: Avatar */}
-        <img src="https://images.unsplash.com/photo-1662144374178-753a74fa28fb?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style={{ width: "100%", height: "auto" }} />
-        <br /><br />
+        {/* <img src="https://images.unsplash.com/photo-1662144374178-753a74fa28fb?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style={{ width: "100%", height: "auto" }} />
+        <br /><br /> */}
         <Box sx={{ paddingInline: 5, flexBasis: '10%', textAlign: 'right' }}>
           <Typography style={{ padding: 7, color: "#fff", borderRadius: 20, backgroundColor: group.group_status == 1 ? "#000" : group.group_status === "running" ? "#2FAB0690" : "#DB756B", fontWeight: "900", width: 120, textAlign: "center", float: "right", marginBottom: 20 }}>{group.group_status == 1 ? "Inactive" : group.group_status === "running" ? "Running" : "Closed"}</Typography>
         </Box>

@@ -8,7 +8,6 @@ import {
   Avatar,
   Paper,
   Grid,
-  Modal,
   TextField,
   Drawer,
   Badge,
@@ -28,6 +27,21 @@ import { HTTPGetWithToken, HTTPPostWithToken } from 'src/Services';
 import { BASEURL } from 'src/Constant/Link';
 import GroupDetailsModal from 'src/@core/components/Modal';
 import toast, { Toaster } from 'react-hot-toast';
+import Modal from 'react-modal';
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
+// Modal.setAppElement('#yourAppElement');
+
 
 const PaymentRequest: React.FC = () => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -49,7 +63,7 @@ const PaymentRequest: React.FC = () => {
     return `${year}-${month}-${day}`;
   };
   const handleGroupPress = async (groupId) => {
-toast('Sending Request...');
+    toast('Sending Request...');
 
     const user = await localStorage.getItem("user");
 
@@ -69,6 +83,7 @@ toast('Sending Request...');
     )
       .then((data) => {
         toast(data.code === 200 ? data.message : data.errorMessage);
+        closeModal()
       })
       .catch(() => toast('An error occurred, please try again.'));
   };
@@ -115,6 +130,24 @@ toast('Sending Request...');
     getGroup();
   }, []);
 
+  let subtitle;
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [currentID, setCurrentID] = useState("")
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    subtitle.style.color = '#f00';
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+
   return (
     <Box sx={{ padding: 5, backgroundColor: "#fff" }}>
       <Toaster />
@@ -156,7 +189,10 @@ toast('Sending Request...');
               <ListItem
                 key={item.id}
                 button
-                onClick={() => window.toast("Long press to accept invitation")}
+                onClick={() => {
+                  setCurrentID(item.id);
+                  openModal();
+                }}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   handleGroupPress(item.id);
@@ -182,7 +218,23 @@ toast('Sending Request...');
           </List>
         )}
       </Box>
+      <Modal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStyles}
+        id="yourAppElement"
+        contentLabel="Example Modal"
+      >
+        <a onClick={closeModal} style={{ textDecoration: "none", justifyContent: "flex-end", alignItems: "flex-end", float: "right" }} href="#close"><span className='fa fa-times' style={{ fontSize: 20 }}>X</span></a>
+        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Confirm</h2>
 
+        <div style={{ fontSize: 15, fontWeight: "700" }}>Are you sure you want to join group?</div>
+        <Button onClick={() => {
+          handleGroupPress(currentID);
+        }} style={{ marginTop: 10, border: "1px solid" }}>Yes, proceed</Button>
+
+      </Modal>
       {/* Load More Button */}
       {group.length > 0 && (
         <Box textAlign="center" mt={2}>

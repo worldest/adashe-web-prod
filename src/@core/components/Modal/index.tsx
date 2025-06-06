@@ -65,6 +65,8 @@ import { useDropzone } from "react-dropzone";
 import Message from '../Message';
 import MessageModal from '../Message';
 import toast, { Toaster } from 'react-hot-toast';
+import { RefreshCircle } from 'mdi-material-ui';
+import { Refresh } from '@mui/icons-material';
 interface GroupDetailsModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -671,15 +673,15 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     }
   };
 
-  const handleDelete= async (member) => {
+  const handleDelete = async (member) => {
     const user = await localStorage.getItem("user");
     const parsedUser = JSON.parse(user); // Now it's parsed properly
     const userId = parsedUser.user.user_id;
     const token = parsedUser.user.token;
     setLoading(true);
     const body = {
-      userid: userId,  
-      invited_userid:member.user_id,
+      userid: userId,
+      invited_userid: member.user_id,
       group_id: member.group_id
     };
     console.log(body)
@@ -690,7 +692,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),token
+        body: JSON.stringify(body), token
       });
       const data = await response.json();
 
@@ -706,7 +708,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
       setLoading(false);
     }
   };
-  const handleGropDelete= async () => {
+  const handleGropDelete = async () => {
     const user = await localStorage.getItem("user");
     const parsedUser = JSON.parse(user); // Now it's parsed properly
     const userId = parsedUser.user.user_id;
@@ -714,7 +716,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     console.log(token)
     setLoading(true);
     const body = {
-      userid: userId,   
+      userid: userId,
       group_id: groupId
     };
 
@@ -725,7 +727,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),token
+        body: JSON.stringify(body), token
       });
       const data = await response.json();
       console.log(data)
@@ -824,7 +826,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
     handleGropDelete(); // Call the delete handler
     setOpen(false);     // Close the dialog
   };
-    const [open2, setOpen2] = useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const handleOpen2 = () => setOpen2(true);
   const handleClose2 = () => setOpen2(false);
@@ -858,35 +860,35 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
           <Grid item xs={10}>
             <Typography variant="h6" sx={{ color: '#000' }} fontWeight='bold'>{groupData.group_name}</Typography>
             <Typography variant="subtitle1" sx={{ color: '#000' }}>{groupData.group_desc}</Typography>
-            <br/>
-             
-             {groupData.host === auth.user_id && (
-        <Button
-          variant="contained"
-          sx={{ borderRadius: 2, alignSelf: "flex-end", backgroundColor: "red" }}
-          onClick={handleOpen}
-        >
-          Delete Group
-        </Button>
-      )}
+            <br />
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-      >
-        <DialogTitle>Are you sure?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this group? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+            {groupData.host === auth.user_id && (
+              <Button
+                variant="contained"
+                sx={{ borderRadius: 2, alignSelf: "flex-end", backgroundColor: "red" }}
+                onClick={handleOpen}
+              >
+                Delete Group
+              </Button>
+            )}
+
+            <Dialog
+              open={open}
+              onClose={handleClose}
+            >
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Are you sure you want to delete this group? This action cannot be undone.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={confirmDelete} color="error" variant="contained">
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
 
           {/* Close Icon */}
@@ -899,17 +901,32 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
         {/* Chat and Notification Row */}
         <Grid container spacing={2} mt={2}>
-          <Grid item xs={6} textAlign="center">
+          <Grid item xs={4} textAlign="center">
             <IconButton onClick={openChatModal}>
               <ChatIcon sx={{ color: "#4fb26e" }} fontSize="large" />
             </IconButton>
             <Typography sx={{ color: '#000' }}>Chat</Typography>
           </Grid>
-          <Grid item xs={6} textAlign="center">
+          <Grid item xs={4} textAlign="center">
             <IconButton onClick={openNotificationsModal}>
               <NotificationsIcon sx={{ color: "#4fb26e" }} fontSize="large" />
             </IconButton>
             <Typography sx={{ color: '#000' }}>Notifications</Typography>
+          </Grid>
+          <Grid item xs={4} textAlign="center">
+            <IconButton onClick={() => {
+              // fetchGroupChats();
+              fetchGroupData();
+              fetchGroupPayouts();
+              fetchGroupTrans();
+              toast("Refreshing...")
+              setTimeout(() => {
+                toast("Refresh completed.")
+              }, 4000)
+            }}>
+              <Refresh sx={{ color: "#4fb26e" }} fontSize="large" />
+            </IconButton>
+            <Typography sx={{ color: '#000' }}>Refresh</Typography>
           </Grid>
         </Grid>
 
@@ -1042,7 +1059,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
             </Box>
 
             {/* Members List */}
-            {groupData.host === auth.user_id ? (
+            {
               user_.map((o, i) => (
                 <Grid container alignItems="center" spacing={2} key={i} sx={{ marginY: 1 }}>
                   <Paper
@@ -1080,15 +1097,21 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
 
                     {/* Remove Button */}
                     <Grid item xs={4} sx={{ alignContent: "flex-end", alignItems: "flex-end" }}>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ borderRadius: 2, alignSelf: "flex-end" }} 
-                        onClick={handleOpen2}
-                      >
-                        Remove
-                      </Button>
-                      
+                      {
+
+                        groupData.host === auth.user_id ? (
+                          <Button
+                            variant="contained"
+                            color="error"
+                            sx={{ borderRadius: 2, alignSelf: "flex-end" }}
+                            onClick={handleOpen2}
+                          >
+                            Remove
+                          </Button>
+                        ) : <></>
+                      }
+
+
 
                       <Dialog
                         open={open2}
@@ -1102,11 +1125,11 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={handleClose2}>Cancel</Button>
-                          <Button  
-                        onClick={() => {
-                          setOpen2(false)
-                           handleDelete(o)
-                        }} color="error" variant="contained">
+                          <Button
+                            onClick={() => {
+                              setOpen2(false)
+                              handleDelete(o)
+                            }} color="error" variant="contained">
                             Remove
                           </Button>
                         </DialogActions>
@@ -1115,7 +1138,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({
                   </Paper>
                 </Grid>
               ))
-            ) : null}
+            }
 
             {/* Extra Space */}
             <Box sx={{ height: 100 }} />

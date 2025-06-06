@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import InputAdornment from '@mui/material/InputAdornment'
-
+import Image from 'next/image';
 // ** Icons Imports
 import Menu from 'mdi-material-ui/Menu'
 import Magnify from 'mdi-material-ui/Magnify'
@@ -33,7 +33,7 @@ const AppBarContent = (props: Props) => {
   const hiddenSm = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <Box sx={{ width: '100%', paddingInline: 2, display: 'flex', backgroundColor: "#fff", alignItems: 'center', justifyContent: 'space-between' }}>
       <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
         {hidden ? (
           <IconButton
@@ -44,34 +44,27 @@ const AppBarContent = (props: Props) => {
             <Menu />
           </IconButton>
         ) : null}
-        {/* <TextField
-          size='small'
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position='start'>
-                <Magnify fontSize='small' />
-              </InputAdornment>
-            )
-          }}
-        /> */}
+
       </Box>
-      <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        {/* {hiddenSm ? null : (
-          <Box
-            component='a'
-            target='_blank'
-            rel='noreferrer'
-            sx={{ mr: 4, display: 'flex' }}
-            href='https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free'
-          >
-            <img
-              height={24}
-              alt='github stars'
-              src='https://img.shields.io/github/stars/themeselection/materio-mui-react-nextjs-admin-template-free?style=social'
-            />
-          </Box>
-        )}  */}
+      {!hiddenSm ? null : (
+        <Box
+          component='a'
+          target='_blank'
+          pt={2}
+          rel='noreferrer'
+          sx={{ mr: 4, display: 'flex' }}
+          href='https://github.com/themeselection/materio-mui-react-nextjs-admin-template-free'
+        >
+          <Image
+            src='/images/Logo2.jpg' // Assuming your image is located at public/image/logo.png
+            alt='Logo'
+            width={100}
+            height={60}
+          />
+        </Box>
+      )}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
         {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
         <NotificationDropdown />
         <UserDropdown />
